@@ -28,7 +28,6 @@ public class CalibrateCmd extends CommandGroup {
 
     double currPos;
     double downDistance;
-    double upDistance;
     double target;
     boolean ArmHasLowerLimitSwitch = false;
     boolean WristHasLowerLimitSwitch = false;
@@ -46,22 +45,25 @@ public class CalibrateCmd extends CommandGroup {
     addSequential(new ResetElevatorEncoderCmd());
     Robot.Log("Elevator calibration completed");
 
+    Robot.Log("Arm calibration start");
     if(ArmHasLowerLimitSwitch){
       // this assumes there is a lower limit switch on the arm
       // and that the arm position is near it
-      Robot.Log("Arm calibration start");
       currPos = Robot.encodedArmTalon.getCurrentPosition();
       target = currPos + RobotMap.TalonArmCalibrateUpDist;
       addSequential(new TalonArmPIDMove(target));
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateDownDist));
       addSequential(new ResetArmEncoderCmd());
-      Robot.Log("Arm calibration completed");
     }
+    else {
+      addSequential(new ResetArmEncoderCmd());
+    }
+    Robot.Log("Arm calibration completed");
   
+    Robot.Log("Wrist calibration start");
     if(WristHasLowerLimitSwitch){
       // this assumes there is a lower limit switch on the arm
       // and that the arm position is near it
-      Robot.Log("Wrist calibration start");
       currPos = Robot.encodedWristTalon.getCurrentPosition();
       target = currPos + RobotMap.TalonWristCalibrateUpDist;
       addSequential(new TalonWristPIDMove(target));
@@ -69,6 +71,11 @@ public class CalibrateCmd extends CommandGroup {
       addSequential(new ResetWristEncoderCmd());
       Robot.Log("Wrist calibration completed");
     }
+    else {
+      addSequential(new ResetWristEncoderCmd());
+    }
+    Robot.Log("Arm calibration completed");
+
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
