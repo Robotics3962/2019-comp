@@ -36,6 +36,12 @@ public class RobotMap {
   public static final int ElevatorTopLimitSwitchId = 0;
   public static final int ElevatorBottomLimitSwitchId = 1;
   
+  public static final int ArmTopLimitSwitchId = 2;
+  public static final int ArmBottomLimitSwitchId = 3;
+
+  public static final int WristTopLimitSwitchId = 4;
+  public static final int WristBottomLimitSwitchId = 5;
+
   // these are PWM ids
   public static final int SparkMotorId1 = 5;
   public static final int SparkMotorId2 = 6;
