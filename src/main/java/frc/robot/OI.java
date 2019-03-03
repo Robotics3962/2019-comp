@@ -29,6 +29,7 @@ import frc.robot.commands.PIDWristDownCmd;
 import frc.robot.commands.PIDArmUpCmd;
 import frc.robot.commands.PIDWristUpCmd;
 import frc.robot.commands.ResetAllEncoders;
+import frc.robot.commands.CalibrateCmd;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -83,6 +84,10 @@ public class OI {
     opButtonY.whileHeld(new PIDWristUpCmd());
     opButtonLS.whileHeld(new ElevatorDownCmd());
     opButtonRS.whileHeld(new ElevatorUpCmd());
+
+    // this will run the calibration, it assumes the
+    // arm,wrist,and arm are at there powered off positions
+    opButtonStart.whenPressed(new CalibrateCmd());
 
     // this should be used only under extreme duress.
     // will zero the positions of the elevator,arm, and wrist
