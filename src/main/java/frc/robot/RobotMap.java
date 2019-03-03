@@ -80,6 +80,8 @@ public class RobotMap {
   public static final double TalonArmPID_I = 0.0;
   public static final double TalonArmPID_D = 0.0;
   public static final double TalonArmPID_F = 0.0;
+  public static final double TalonArmCalibrateUpDist = -100;
+  public static final double TalonArmCalibrateDownDist = 1000;
 
   //wrist
   public static final double TalonWristUpSpeed = -.6;
@@ -94,8 +96,10 @@ public class RobotMap {
   public static final double TalonWristPID_I = 0.0;
   public static final double TalonWristPID_D = 0.0;
   public static final double TalonWristPID_F = 0.0;
+  public static final double TalonWristCalibrateUpDist = -100;
+  public static final double TalonWristCalibrateDownDist = 1000;
 
-  // test elevator values
+  // elevator values
   public static final int SparkElevatorId = 5;
   public static final double ElevatorUpSpeed = 0.4;
   public static final double ElevatorUpPidDelta = 0.5; // match sign of up speed
@@ -111,6 +115,8 @@ public class RobotMap {
   public static final double ElevatorMinOutput = -.5;
   public static final double ElevatorMaxOutput = .5;
   public static final double ElevatorAbsTolerance = 5;
+  public static final double ElevatorCalibrateUpDist = 5;
+  public static final double ElevatorCalibrateDownDist = -50;
 
   // intake values
   public static final int SparkIntakeId = 4;
