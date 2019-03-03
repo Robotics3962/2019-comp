@@ -11,13 +11,17 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.ResetArmEncoderCmd;
 import frc.robot.commands.ResetElevatorEncoderCmd;
 import frc.robot.commands.ResetWristEncoderCmd;
+import frc.robot.Robot;
 
 public class ResetAllEncoders extends CommandGroup {
   /**
    * Add your docs here.
    */
   public ResetAllEncoders() {
-
+    requires(Robot.pidElevator);
+    requires(Robot.encodedArmTalon);
+    requires(Robot.encodedWristTalon);
+    
     // this is emergency use only, only call this
     // command when the robot elevator, arm, and wrist
     // are in their zero positions. It will need to be

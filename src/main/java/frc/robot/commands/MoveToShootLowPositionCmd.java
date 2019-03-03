@@ -20,6 +20,10 @@ public class MoveToShootLowPositionCmd extends CommandGroup {
    * Add your docs here.
    */
   public MoveToShootLowPositionCmd() {
+    requires(Robot.pidElevator);
+    requires(Robot.encodedArmTalon);
+    requires(Robot.encodedWristTalon);
+
     CollectorPosition componentPositions = Robot.collectorPositions[RobotMap.LowBallPosIndex];
     addSequential(new ElevatorPIDMoveCmd(componentPositions.elevatorPos));
     addSequential(new TalonArmPIDMove(componentPositions.armPos));
