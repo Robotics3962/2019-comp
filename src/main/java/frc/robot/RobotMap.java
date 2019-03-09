@@ -126,7 +126,7 @@ public class RobotMap {
 
   // intake values
   public static final int SparkIntakeId = 4;
-  public static final double IntakeIngressSpeed = -0.3;
+  public static final double IntakeIngressSpeed = -0.56;
   public static final double IntakeEgressSpeed = 0.8;
   public static final double IntakeStopSpeed = .001;
 

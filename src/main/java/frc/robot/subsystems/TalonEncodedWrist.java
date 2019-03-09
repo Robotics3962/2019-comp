@@ -108,7 +108,7 @@ public class TalonEncodedWrist extends Subsystem {
           PRIMARY_ENCODER_IDX, 
           ENCODER_CONFIG_TIMEOUT);
 
-      motor1.setSensorPhase(false);
+      motor1.setSensorPhase(true);
 
       motor1.setNeutralMode(NeutralMode.Brake);
       motor2.setNeutralMode(NeutralMode.Brake);

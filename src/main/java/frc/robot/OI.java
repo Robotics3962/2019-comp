@@ -69,8 +69,10 @@ public class OI {
       driveButtonB.whileHeld(new ArmUpCmd());
       driveButtonX.whileHeld(new WristDownCmd());
       driveButtonY.whileHeld(new WristUpCmd());
-      driveButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
-      driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
+      driveButtonLS.whileHeld(new ShootBallCmd());
+      driveButtonRS.whileHeld(new GrabBallCmd());
+      //driveButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
+      //driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
     }
     else{
       driveButtonA.whenPressed(new MoveToGrabPositionCmd());

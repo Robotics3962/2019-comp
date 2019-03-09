@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.RobotMap;
 import frc.robot.Robot;
 import frc.robot.commands.ElevatorHoldCmd;
+import frc.robot.subsystems.TalonEncodedArm;
 
 /**
  * Add your docs here.
@@ -191,7 +192,7 @@ public class PIDElevator extends PIDSubsystem {
 	
   public void Down() {
     LogInfo(true);
-    if (atLowerLimit()){
+    if (atLowerLimit() || Robot.encodedArmTalon.atLowerLimit()){ //when the arm hits the liit switcht he elevator needs to be stopped as well
       Stop();
     } 
     else {

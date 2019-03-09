@@ -38,8 +38,8 @@ public class TalonEncodedArm extends Subsystem {
   private double targetPosition;
   private double velocity;
   private boolean encodersAreEnabled = false;
-  private boolean limitSwAreEnabled = true;
-  private boolean manualOverride = true;
+  private static boolean ArmlimitsAreEnabled = true; //used to be private
+  private static boolean manualOverride = true;
   private int count = 0;
   private int logMsgInterval = 5;
 
@@ -59,7 +59,7 @@ public class TalonEncodedArm extends Subsystem {
 
   public TalonEncodedArm() {
     encodersAreEnabled = false;
-    limitSwAreEnabled = true;
+    ArmlimitsAreEnabled = true;
 
     targetPosition = 0;
     velocity = 0;
@@ -87,7 +87,7 @@ public class TalonEncodedArm extends Subsystem {
     motor1.setInverted(false);
     motor2.setInverted(false);
 
-    if(limitSwAreEnabled){
+    if(ArmlimitsAreEnabled){
       topLimit = new DigitalInput(RobotMap.ArmTopLimitSwitchId);
       bottomLimit = new DigitalInput(RobotMap.ArmBottomLimitSwitchId);
     }
@@ -265,7 +265,7 @@ public class TalonEncodedArm extends Subsystem {
 
   public boolean atUpperLimit(){
     boolean atLimit = false;
-    if(limitSwAreEnabled){
+    if(ArmlimitsAreEnabled){
       atLimit = topLimit.get();
     }
 
@@ -274,7 +274,7 @@ public class TalonEncodedArm extends Subsystem {
 
   public boolean atLowerLimit() {
     boolean atLimit = false;
-    if(limitSwAreEnabled){
+    if(ArmlimitsAreEnabled){
       atLimit = bottomLimit.get();
     }
     
