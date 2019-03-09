@@ -91,8 +91,8 @@ public class TalonEncodedWrist extends Subsystem {
     
     // this could be either true or false, we have to determine
     // how it is confgured
-    motor1.setInverted(false);
-    motor2.setInverted(false);
+    motor1.setInverted(true);
+    motor2.setInverted(true);
 
     if(limitSwAreEnabled){
       topLimit = new DigitalInput(RobotMap.WristTopLimitSwitchId);
@@ -108,7 +108,7 @@ public class TalonEncodedWrist extends Subsystem {
           PRIMARY_ENCODER_IDX, 
           ENCODER_CONFIG_TIMEOUT);
 
-      motor1.setSensorPhase(true);
+      motor1.setSensorPhase(false);//changed from false to true
 
       motor1.setNeutralMode(NeutralMode.Brake);
       motor2.setNeutralMode(NeutralMode.Brake);

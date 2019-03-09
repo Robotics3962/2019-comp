@@ -157,7 +157,7 @@ public class RobotMap {
   public static final double RotationScaleFactor = 0.45;
 
   // this is used to make the encoder phase check less sensitive
-  public static final double EncoderSlop = 2;
+  public static final double EncoderSlop = 20;//used to be 2
 
   // position of elevator,arm and wrist to grab a ball
   public static final int    GrabBallPosIndex = 0;
