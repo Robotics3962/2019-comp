@@ -392,5 +392,13 @@ public class TalonEncodedWrist extends Subsystem {
     output = output + " upLimit:" + atUpperLimit();
     output = output + " loimit:" + atLowerLimit();
     Robot.Log(output);
+
+    Robot.UpdateDashboard("Wrist.manual", manualOverride); 
+    Robot.UpdateDashboard("Wrist.targetPos", targetPosition); 
+    Robot.UpdateDashboard("Wrist.currPos", currPos);
+    Robot.UpdateDashboard("Wrist.speed", velocity);
+    Robot.UpdateDashboard("Wrist.upLimit", atUpperLimit());
+    Robot.UpdateDashboard("Wrist.loLimit", atLowerLimit());
+     
   }
 }

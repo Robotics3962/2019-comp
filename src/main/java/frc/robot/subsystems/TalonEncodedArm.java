@@ -385,6 +385,13 @@ public class TalonEncodedArm extends Subsystem {
     output = output + " upLimit:" + atUpperLimit();
     output = output + " boLimit:" + atLowerLimit();
     Robot.Log(output);
+
+    Robot.UpdateDashboard("Arm.manual", manualOverride); 
+    Robot.UpdateDashboard("Arm.targetPos", targetPosition); 
+    Robot.UpdateDashboard("Arm.currPos", currPos);
+    Robot.UpdateDashboard("Arm.speed", velocity);
+    Robot.UpdateDashboard("Arm.upLimit", atUpperLimit());
+    Robot.UpdateDashboard("Arm.loLimit", atLowerLimit());
   }
 }
 

@@ -276,5 +276,13 @@ public class PIDElevator extends PIDSubsystem {
     output = output + " upLimit:" + atUpperLimit();
     output = output + " boLimit:" + atLowerLimit();
     Robot.Log(output);
+
+    Robot.UpdateDashboard("Elev.manual", manualOverride); 
+    Robot.UpdateDashboard("Elev.targetPos", targetPosition); 
+    Robot.UpdateDashboard("Elev.currPos", currPos);
+    Robot.UpdateDashboard("Elev.speed", currSpeed);
+    Robot.UpdateDashboard("Elev.upLimit", atUpperLimit());
+    Robot.UpdateDashboard("Elev.loLimit", atLowerLimit());
+
   }
 }

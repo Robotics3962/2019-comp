@@ -73,6 +73,18 @@ public class Robot extends TimedRobot {
     int u = 1/x;
   }
 
+  public static void UpdateDashboard(String tag, double value){
+    SmartDashboard.putNumber(tag, value);    
+  }
+
+  public static void UpdateDashboard(String tag, boolean value){
+    SmartDashboard.putBoolean(tag, value);    
+  }
+
+  public static void UpdateDashboard(String tag, String value){
+    SmartDashboard.putString(tag, value);    
+  }
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.

@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 /**
@@ -15,26 +16,43 @@ import frc.robot.RobotMap;
  */
 public class Intake extends Subsystem {
 
-    Spark motor;
-
+	private Spark motor;
+	private double currSpeed;
+	public enum Operation { STOP, SHOOT, GRAB};
+	private Operation op = Operation.STOP;
     public Intake(){
 		motor = new Spark(RobotMap.SparkIntakeId);
 		motor.enableDeadbandElimination(true);	
 	}
 		
 	public void grabIntake() {
-		motor.set(RobotMap.IntakeIngressSpeed);
+		op = Operation.GRAB;
+		currSpeed = RobotMap.IntakeIngressSpeed;
+		motor.set(currSpeed);
+		LogInfo();
 	}
 	
 	public void shootIntake() {
-		motor.set(RobotMap.IntakeEgressSpeed);
+		op = Operation.SHOOT;
+		currSpeed = RobotMap.IntakeEgressSpeed;
+		motor.set(currSpeed);
+		LogInfo();
 	}
 	
-	public void stopIntake() {		
+	public void stopIntake() {
+		op = Operation.STOP;		
+		currSpeed = RobotMap.IntakeStopSpeed;
 		motor.stopMotor();
+		LogInfo();
     }
 
     @Override
     protected void initDefaultCommand() {
-    }
+	}
+	
+	public void LogInfo(){
+		Robot.UpdateDashboard("intake.speed", currSpeed);
+		String tmp = ""+ op;
+		Robot.UpdateDashboard("intake.op", tmp);
+	}
 }
