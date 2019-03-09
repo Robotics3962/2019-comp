@@ -131,13 +131,14 @@ public class PIDElevator extends PIDSubsystem {
       Robot.die();
     }
 
+    LogInfo(true);
+
     double pos = getCurrentPosition();
 
     // stop moving if we are at a limit switch
     // we do this by setting the position we want to
     // move to to the position we are at
     if(atUpperLimit() || atLowerLimit()){
-      Robot.Log("PIDElevator: At currpos:" + pos + " lowerlimit:" + atLowerLimit() + " upperlimit:" +atUpperLimit());
       setPIDPosition(pos);
     }
 
@@ -164,6 +165,7 @@ public class PIDElevator extends PIDSubsystem {
   }
 
   public void Up() {
+    LogInfo(true);
     if (atUpperLimit()){
       Stop();
     } 
@@ -180,6 +182,7 @@ public class PIDElevator extends PIDSubsystem {
   }
 	
   public void Down() {
+    LogInfo(true);
     if (atLowerLimit()){
       Stop();
     } 

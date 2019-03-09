@@ -227,7 +227,6 @@ public class TalonEncodedArm extends Subsystem {
       // want to move to to the current position
       // so we stop moving
       if(atLowerLimit() || atUpperLimit()){
-        Robot.Log("Arm is at Limits: bottom:" + atLowerLimit() + " upper:" + atUpperLimit());
         targetPosition = getCurrentPosition();
       }
       if(useMotionMagic){

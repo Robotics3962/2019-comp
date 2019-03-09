@@ -223,14 +223,14 @@ public class TalonEncodedWrist extends Subsystem {
     if(!encodersAreEnabled){
       Robot.die();
     }
+
     // do not set the pid if manual override is enabled
     if(!manualOverride){
-       // if we have reached the limits, then make sure
+      // if we have reached the limits, then make sure
       // we don't move past them, so set the position we
       // want to move to to the current position
       // so we stop moving
       if(atLowerLimit() || atUpperLimit()){
-        Robot.Log("Wrist is at Limits: bottom:" + atLowerLimit() + " upper:" + atUpperLimit());
         targetPosition = getCurrentPosition();
       }
 
@@ -390,7 +390,7 @@ public class TalonEncodedWrist extends Subsystem {
     output = output + " dir:" + dirMoved;
     output = output + " speed:" + velocity;
     output = output + " upLimit:" + atUpperLimit();
-    output = output + " boLimit:" + atLowerLimit();
+    output = output + " loimit:" + atLowerLimit();
     Robot.Log(output);
   }
 }
