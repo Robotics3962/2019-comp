@@ -12,7 +12,7 @@ import frc.robot.Robot;
 
 public class ArmUpCmd extends Command {
   public ArmUpCmd() {
-    Robot.encodedArmTalon.Up();
+    requires(Robot.encodedArmTalon);
   }
 
   // Called just before this Command runs the first time
@@ -23,6 +23,7 @@ public class ArmUpCmd extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    Robot.encodedArmTalon.Up();
   }
 
   // Make this return true when this Command no longer needs to run execute()
