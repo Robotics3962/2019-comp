@@ -59,7 +59,7 @@ public class RobotMap {
   public static final double TalonMaxOutput = 0.5;
 
   /// generic
-  public static final double TalonUpSpeed = -.3;
+  public static final double TalonUpSpeed = -.2;
   public static final double TalonUpPidDelta = -20; // match sign of upspeed
   public static final double TalonDownSpeed = .3;
   public static final double TalonDownPidDelta = 20; // match sign of down speed

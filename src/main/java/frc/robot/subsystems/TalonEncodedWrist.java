@@ -282,7 +282,9 @@ public class TalonEncodedWrist extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new WristHoldCmd());
+    if(encodersAreEnabled){
+      setDefaultCommand(new WristHoldCmd());
+    }
   }
 
   // make sure the motor and encoder are in phase.  This means that

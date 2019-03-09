@@ -29,7 +29,7 @@ public class PIDElevator extends PIDSubsystem {
   private double targetPosition = 0;
   private double currSpeed = 0;
   private boolean useLimitSwitches = true;
-  private boolean useEncoders = true;
+  private boolean useEncoders = false;
   private boolean manualOverride = false;
   private int count = 0;
   private final int logMsgInterval = 5;
@@ -76,7 +76,9 @@ public class PIDElevator extends PIDSubsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new ElevatorHoldCmd());
+    if(useEncoders){
+      setDefaultCommand(new ElevatorHoldCmd());
+    }
   }
 
   public double getTargetPosition(){
@@ -164,7 +166,9 @@ public class PIDElevator extends PIDSubsystem {
     manualOverride = true;
 
     // make sure we turn off the pid loop
-    getPIDController().disable();
+    if(useEncoders){
+      getPIDController().disable();
+    }
     motor1.set(currSpeed);
   }
 
@@ -222,11 +226,6 @@ public class PIDElevator extends PIDSubsystem {
   // when we move the motor with a negative speed, the encoder
   // show we moved in the negative direction and vice versa
   private void VerifyEncoderPhase(double prevPos){
-    double pos = getCurrentPosition();
-    double deltaPos = pos - prevPos;
-    double sign = 0;
-    boolean check = true;
-
     // don't do this check when running PID
     // as prev and curr position are not set
     // correctly and could flag a false positive
@@ -234,6 +233,11 @@ public class PIDElevator extends PIDSubsystem {
     if(!manualOverride || !useEncoders){
       return;
     }
+
+    double pos = getCurrentPosition();
+    double deltaPos = pos - prevPos;
+    double sign = 0;
+    boolean check = true;
 
     switch(dirMoved){//direction moved
       case DOWN:
