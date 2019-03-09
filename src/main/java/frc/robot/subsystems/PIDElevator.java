@@ -119,7 +119,8 @@ public class PIDElevator extends PIDSubsystem {
 
   public void resetEncoder(){
     if(! useEncoders){
-      Robot.die();
+      return;
+      //Robot.die();
     }
 
     elevatorEncoder.reset();

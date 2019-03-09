@@ -166,7 +166,8 @@ public class TalonEncodedWrist extends Subsystem {
 
   public boolean resetEncoder(){
     if(!encodersAreEnabled){
-      Robot.die();
+      return true;
+      //Robot.die();
     }
 
     stop();

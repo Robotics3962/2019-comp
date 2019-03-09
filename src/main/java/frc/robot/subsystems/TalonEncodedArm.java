@@ -161,7 +161,8 @@ public class TalonEncodedArm extends Subsystem {
 
   public boolean resetEncoder(){
     if(!encodersAreEnabled){
-      Robot.die();
+      return true; 
+      //Robot.die();
     }
 
     // stop the motor as we shouldn't reset when moving
