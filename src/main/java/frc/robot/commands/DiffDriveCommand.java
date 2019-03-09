@@ -31,27 +31,42 @@ public class DiffDriveCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    
-    // the sign on the values from the joystick are opposite
-    // the intuitive directions.  For example, pushing joystick 
-    // forward is a negative number, which moves the motor backwards
-    // so we invert the sign of the values
-    double speed = Robot.m_oi.getLeftJoystickYVal() * -1;
-    double rotation = Robot.m_oi.getLeftJoystickXVal() * 1;
-    double scaledSpeed;
-    double scaledRotation;
-    
-    scaledSpeed = speed * RobotMap.SpeedScaleFactor;
-    scaledRotation = rotation * RobotMap.RotationScaleFactor;
-    //scaledSpeed = scaleValue(speed, RobotMap.SpeedScaleFactor);
-    //scaledRotation = scaleValue(rotation, RobotMap.RotationScaleFactor);
+    boolean testDualControl = true;
 
-    Robot.diffDriveBase.setSpeedAndRotation(scaledRotation, scaledSpeed);//orig Scaledspeed, ScaledRotation
-    
-    //Logging for Debug
-    //System.out.println(speed + ":" + scaledSpeed + "  " + rotation + ":" + scaledRotation);
-    //System.out.println(scaledSpeed + ":" + scaledRotation);
+    if( testDualControl){
+      double speed = Robot.m_oi.getLeftThrottle() * -1;
+      double rotation = Robot.m_oi.getRightRotation() * 1;
+      double scaledSpeed;
+      double scaledRotation;
+      
+      scaledSpeed = speed * RobotMap.SpeedScaleFactor;
+      scaledRotation = rotation * RobotMap.RotationScaleFactor;
+      //scaledSpeed = scaleValue(speed, RobotMap.SpeedScaleFactor);
+      //scaledRotation = scaleValue(rotation, RobotMap.RotationScaleFactor);
 
+      Robot.diffDriveBase.setSpeedAndRotation(scaledRotation, scaledSpeed);//orig Scaledspeed, ScaledRotation
+    }
+    else {
+      // the sign on the values from the joystick are opposite
+      // the intuitive directions.  For example, pushing joystick 
+      // forward is a negative number, which moves the motor backwards
+      // so we invert the sign of the values
+      double speed = Robot.m_oi.getLeftJoystickYVal() * -1;
+      double rotation = Robot.m_oi.getLeftJoystickXVal() * 1;
+      double scaledSpeed;
+      double scaledRotation;
+      
+      scaledSpeed = speed * RobotMap.SpeedScaleFactor;
+      scaledRotation = rotation * RobotMap.RotationScaleFactor;
+      //scaledSpeed = scaleValue(speed, RobotMap.SpeedScaleFactor);
+      //scaledRotation = scaleValue(rotation, RobotMap.RotationScaleFactor);
+
+      Robot.diffDriveBase.setSpeedAndRotation(scaledRotation, scaledSpeed);//orig Scaledspeed, ScaledRotation
+      
+      //Logging for Debug
+      //System.out.println(speed + ":" + scaledSpeed + "  " + rotation + ":" + scaledRotation);
+      //System.out.println(scaledSpeed + ":" + scaledRotation);
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()

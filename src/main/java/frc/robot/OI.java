@@ -99,7 +99,7 @@ public class OI {
     opButtonBack.whenPressed(new ResetAllEncoders());
   }
 
-  // these next to functions are legacy functions that get joystick values
+  // these next two functions are legacy functions that get joystick values
 
   public double getLeftJoystickXVal() {
     double raw = driveJoystick.getX();
