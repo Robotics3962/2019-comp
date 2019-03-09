@@ -43,7 +43,7 @@ public class PIDElevator extends PIDSubsystem {
 
     // enable the encoders and limit switches
     useLimitSwitches = true;
-    useEncoders = true;
+    useEncoders = false;
 
     // min and max output is -1 and 1 by default
     // looking at the code, if tolerance is absolute
@@ -94,21 +94,25 @@ public class PIDElevator extends PIDSubsystem {
       Robot.die();
     }
 
-    setSetpoint(distance);
     targetPosition = distance;
+  }
+
+  public void holdPosition(){
+    if(! useEncoders){
+      return;
+    }
+
+    move();    
+  }
+
+  public void move(){
+    setSetpoint(targetPosition);
     manualOverride = false;
 
     // start the timing loop after we set the distance
     // this is needed for PID loop to start working
     getPIDController().enable();  
-  }
 
-  public void holdPosition(){
-    if(! useEncoders){
-      Robot.die();
-    }
-
-    setPIDPosition(targetPosition);    
   }
 
   public void resetEncoder(){
@@ -174,7 +178,6 @@ public class PIDElevator extends PIDSubsystem {
   }
 	
   public void Down() {
-    dumpLimitSwitchValues();;
     if (atLowerLimit()){
       Stop();
     } 
@@ -212,7 +215,7 @@ public class PIDElevator extends PIDSubsystem {
     Robot.Log("Elevator: atLowerLimit:" + atLowerLimit() + " atUpperLimit:" + atUpperLimit());
   }  
 
- // make sure the motor and encoder are in phase.  This means that
+  // make sure the motor and encoder are in phase.  This means that
   // when we move the motor with a negative speed, the encoder
   // show we moved in the negative direction and vice versa
   private void VerifyEncoderPhase(double prevPos){
@@ -225,7 +228,7 @@ public class PIDElevator extends PIDSubsystem {
     // as prev and curr position are not set
     // correctly and could flag a false positive
     // or a false negative
-    if(!manualOverride){
+    if(!manualOverride || !useEncoders){
       return;
     }
 
@@ -251,5 +254,4 @@ public class PIDElevator extends PIDSubsystem {
     pastPosition = getCurrentPosition();
     return;
   }
-
 }
