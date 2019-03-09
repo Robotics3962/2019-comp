@@ -41,8 +41,6 @@ public class TalonEncodedWrist extends Subsystem {
 
   private WPI_TalonSRX motor1;
   private WPI_TalonSRX motor2;
-//  private TalonSRX motor1;
-//  private TalonSRX motor2;
 
   private double targetPosition;
   private double velocity;
@@ -75,8 +73,6 @@ public class TalonEncodedWrist extends Subsystem {
 
     // assume that motor1 is connected to encoder
     
-//    motor1 = new TalonSRX(RobotMap.TalonMotorCanID3);
-//    motor2 = new TalonSRX(RobotMap.TalonMotorCanID4);
     motor1 = new WPI_TalonSRX(RobotMap.TalonMotorCanID3);
     motor2 = new WPI_TalonSRX(RobotMap.TalonMotorCanID4);
 
@@ -97,6 +93,11 @@ public class TalonEncodedWrist extends Subsystem {
     // how it is confgured
     motor1.setInverted(false);
     motor2.setInverted(false);
+
+    if(limitSwAreEnabled){
+      topLimit = new DigitalInput(RobotMap.WristTopLimitSwitchId);
+      bottomLimit = new DigitalInput(RobotMap.WristBottomLimitSwitchId);
+    }
 
     if (encodersAreEnabled) {
       // init code pulled from https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java/MotionMagic/src/main/java/frc/robot/Robot.java
@@ -174,6 +175,11 @@ public class TalonEncodedWrist extends Subsystem {
     // because it is done asynchronously. Have a command call encoderResetComplete()
     // until it returns true 
     motor1.setSelectedSensorPosition(PRIMARY_ENCODER_IDX, ENCODER_RESET_POSTION, ENCODER_RESET_TIMEOUT);
+
+    // set the target position to 0 so we don't move the arm to some
+    // out of bounds place
+    targetPosition  = 0;
+
     Robot.Log("wrist talon encoders reset");
     return true;
   }
@@ -208,11 +214,9 @@ public class TalonEncodedWrist extends Subsystem {
   }
 
   public void holdPosition(){
-    if(!encodersAreEnabled){
-      Robot.die();
+    if(encodersAreEnabled){
+      move();
     }
-    
-    move();
   }
 
   public void move(){
@@ -221,6 +225,15 @@ public class TalonEncodedWrist extends Subsystem {
     }
     // do not set the pid if manual override is enabled
     if(!manualOverride){
+       // if we have reached the limits, then make sure
+      // we don't move past them, so set the position we
+      // want to move to to the current position
+      // so we stop moving
+      if(atLowerLimit() || atUpperLimit()){
+        Robot.Log("Wrist is at Limits: bottom:" + atLowerLimit() + " upper:" + atUpperLimit());
+        targetPosition = getCurrentPosition();
+      }
+
       if(useMotionMagic){
         motor1.set(ControlMode.MotionMagic, targetPosition);
       }
@@ -249,19 +262,22 @@ public class TalonEncodedWrist extends Subsystem {
   }
 
   public boolean atUpperLimit(){
-    //return topLimit.get();
-    return false;
+    boolean atLimit = false;
+    if(limitSwAreEnabled){
+      atLimit = topLimit.get();
+    }
+
+    return atLimit;
   }
 
   public boolean atLowerLimit() {
-   // return bottomLimit.get();
-      return false;
-
+    boolean atLimit = false;
+    if(limitSwAreEnabled){
+      atLimit = bottomLimit.get();
+    }
+    
+    return atLimit;
   }
-
-  public void dumpLimitSwitchValues(){
-    Robot.Log("wrist talon: atLowerLimit:" + atLowerLimit() + " atUpperLimit:" + atUpperLimit());
-  }  
 
   @Override
   public void initDefaultCommand() {
@@ -272,40 +288,42 @@ public class TalonEncodedWrist extends Subsystem {
   // when we move the motor with a negative speed, the encoder
   // show we moved in the negative direction and vice versa
   private void VerifyEncoderPhase(double prevPos){
-    double pos = getCurrentPosition();
-    double deltaPos = pos - prevPos;
-    double sign = 0;
-    boolean check = true;
 
-    // don't do this check when running PID
-    // as prev and curr position are not set
-    // correctly and could flag a false positive
-    // or a false negative
-    if(!manualOverride){
-      return;
-    }
+    if(encodersAreEnabled){
+      double pos = getCurrentPosition();
+      double deltaPos = pos - prevPos;
+      double sign = 0;
+      boolean check = true;
 
-    switch(dirMoved){
-      case DOWN:
-        sign = Math.copySign(1, RobotMap.TalonWristDownSpeed);
-        break;
-      case UP:
-        sign = Math.copySign(1, RobotMap.TalonWristUpSpeed);
-        break;
-      case NONE://also is referred to if using PID move
-        check = false;
-      break;
-    }
-    
-    if( check && (Math.abs(deltaPos) > RobotMap.EncoderSlop) ){
-      double deltaPosSign = Math.copySign(1, deltaPos);
-      if( deltaPosSign != sign){
-        Robot.Log("Wrist encoder is out of Phase from Wrist Motor");
-        Robot.die();
+      // don't do this check when running PID
+      // as prev and curr position are not set
+      // correctly and could flag a false positive
+      // or a false negative
+      if(!manualOverride){
+        return;
       }
-    }
-    pastPosition = getCurrentPosition();
 
+      switch(dirMoved){
+        case DOWN:
+          sign = Math.copySign(1, RobotMap.TalonWristDownSpeed);
+          break;
+        case UP:
+          sign = Math.copySign(1, RobotMap.TalonWristUpSpeed);
+          break;
+        case NONE://also is referred to if using PID move
+          check = false;
+        break;
+      }
+      
+      if( check && (Math.abs(deltaPos) > RobotMap.EncoderSlop) ){
+        double deltaPosSign = Math.copySign(1, deltaPos);
+        if( deltaPosSign != sign){
+          Robot.Log("Wrist encoder is out of Phase from Wrist Motor");
+          Robot.die();
+        }
+      }
+      pastPosition = getCurrentPosition();
+    }
     return;
   }
 
@@ -322,6 +340,7 @@ public class TalonEncodedWrist extends Subsystem {
   }
 
   public void Up(){
+    LogValues(true);
     if (atUpperLimit()){
       stop();
     }
@@ -333,6 +352,7 @@ public class TalonEncodedWrist extends Subsystem {
   }
 
   public void Down(){
+    LogValues(true);
     if (atLowerLimit()){
       stop();
     }
@@ -356,15 +376,21 @@ public class TalonEncodedWrist extends Subsystem {
     if(dampen && ((count % logMsgInterval) != 0)){
       return;
     }
-    
-    double currPos = getCurrentPosition();
-
+    double currPos = -1;
+    boolean atTarget = false;
+    if(encodersAreEnabled){
+      currPos = getCurrentPosition();
+      atTarget = onTarget();
+    }
+  
     String output = "Wrist Info: manual:" + manualOverride;
     output = output + " target:" + targetPosition;
     output = output + " current:" + currPos;
-    output = output + " ontarg:" + onTarget();
+    output = output + " ontarg:" + atTarget;
     output = output + " dir:" + dirMoved;
     output = output + " speed:" + velocity;
+    output = output + " upLimit:" + atUpperLimit();
+    output = output + " loLimit:" + atLowerLimit();
     Robot.Log(output);
   }
 }

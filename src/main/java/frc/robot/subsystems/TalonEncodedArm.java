@@ -35,15 +35,13 @@ public class TalonEncodedArm extends Subsystem {
 
   private WPI_TalonSRX motor1;
   private WPI_TalonSRX motor2;
-  //private TalonSRX motor1;
-  //private TalonSRX motor2;
   private double targetPosition;
   private double velocity;
   private boolean encodersAreEnabled = false;
   private boolean limitSwAreEnabled = false;
   private boolean manualOverride = true;
   private int count = 0;
-  private int logMsgInterval = 1;
+  private int logMsgInterval = 5;
 
   // set to false to use position, set to true to
   // use motion magic.  girls of steel uses motion magic for
@@ -69,8 +67,6 @@ public class TalonEncodedArm extends Subsystem {
     // assume that motor1 is connected to encoder
     motor1 = new WPI_TalonSRX(RobotMap.TalonMotorCanId1);
     motor2= new WPI_TalonSRX(RobotMap.TalonMotorCanId2); 
-    //motor1 = new TalonSRX(RobotMap.TalonMotorCanId1);
-    //motor2= new TalonSRX(RobotMap.TalonMotorCanId2); 
    
     motor1.configFactoryDefault();
     motor2.configFactoryDefault();
@@ -90,6 +86,11 @@ public class TalonEncodedArm extends Subsystem {
     // how it is confgured
     motor1.setInverted(false);
     motor2.setInverted(false);
+
+    if(limitSwAreEnabled){
+      topLimit = new DigitalInput(RobotMap.ArmTopLimitSwitchId);
+      bottomLimit = new DigitalInput(RobotMap.ArmBottomLimitSwitchId);
+    }
 
     if (encodersAreEnabled) {
       // init code pulled from https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java/MotionMagic/src/main/java/frc/robot/Robot.java
@@ -132,7 +133,7 @@ public class TalonEncodedArm extends Subsystem {
     motor1.setNeutralMode(NeutralMode.Brake);
     motor2.setNeutralMode(NeutralMode.Brake);
 
-    Robot.Log("Talon is initialized");
+    Robot.Log("Arm Talon is initialized");
   }
 
   public void setPIDPosition(double pos) {
@@ -170,7 +171,12 @@ public class TalonEncodedArm extends Subsystem {
     // because it is done asynchronously. Have a command call encoderResetComplete()
     // until it returns true 
     motor1.setSelectedSensorPosition(PRIMARY_ENCODER_IDX, ENCODER_RESET_POSTION, ENCODER_RESET_TIMEOUT);
-    Robot.Log("talon encoders reset");
+
+    // set the target position to 0 so we don't move the arm to some
+    // out of bounds place
+    targetPosition  = 0;
+
+    Robot.Log("Arm talon encoders reset");
     return true;
   }
 
@@ -204,11 +210,9 @@ public class TalonEncodedArm extends Subsystem {
   }
 
   public void holdPosition(){
-    if(!encodersAreEnabled){
-      Robot.die();
+    if(encodersAreEnabled){
+      move();
     }
-    
-    move();
   }
 
   public void move(){
@@ -218,6 +222,14 @@ public class TalonEncodedArm extends Subsystem {
 
     // only move via PID when we are not manually controlling
     if(!manualOverride){
+      // if we have reached the limits, then make sure
+      // we don't move past them, so set the position we
+      // want to move to to the current position
+      // so we stop moving
+      if(atLowerLimit() || atUpperLimit()){
+        Robot.Log("Arm is at Limits: bottom:" + atLowerLimit() + " upper:" + atUpperLimit());
+        targetPosition = getCurrentPosition();
+      }
       if(useMotionMagic){
         motor1.set(ControlMode.MotionMagic, targetPosition);
       }
@@ -250,18 +262,22 @@ public class TalonEncodedArm extends Subsystem {
   }
 
   public boolean atUpperLimit(){
-    //return topLimit.get();
-    return false;
+    boolean atLimit = false;
+    if(limitSwAreEnabled){
+      atLimit = topLimit.get();
+    }
+
+    return atLimit;
   }
 
   public boolean atLowerLimit() {
-   // return bottomLimit.get();
-      return false;
+    boolean atLimit = false;
+    if(limitSwAreEnabled){
+      atLimit = bottomLimit.get();
+    }
+    
+    return atLimit;
   }
-
-  public void dumpLimitSwitchValues(){
-    Robot.Log("talon: atLowerLimit:" + atLowerLimit() + " atUpperLimit:" + atUpperLimit());
-  }  
 
   // make sure the motor and encoder are in phase.  This means that
   // when we move the motor with a negative speed, the encoder
@@ -276,7 +292,7 @@ public class TalonEncodedArm extends Subsystem {
     // as prev and curr position are not set
     // correctly and could flag a false positive
     // or a false negative
-    if(!manualOverride){
+    if(!manualOverride || !encodersAreEnabled){
       return;
     }
 
@@ -318,7 +334,7 @@ public class TalonEncodedArm extends Subsystem {
 
   public void Up(){
     if (atUpperLimit()){
-      stop();
+      Stop();
     }
     else {
       VerifyEncoderPhase(pastPosition);
@@ -330,7 +346,7 @@ public class TalonEncodedArm extends Subsystem {
 
   public void Down(){
     if (atLowerLimit()){
-      stop();
+      Stop();
     }
     else {
       VerifyEncoderPhase(pastPosition);
@@ -345,21 +361,28 @@ public class TalonEncodedArm extends Subsystem {
     // or call motor1.stopMotor()
     stop();
   }
+
   public void LogInfo(boolean dampen){
     count++;
 
     if(dampen && ((count % logMsgInterval) != 0)){
       return;
     }
-    
-    double currPos = getCurrentPosition();
-
-    String output = "Arm   Info: manual:" + manualOverride;
+    double currPos = -1;
+    boolean atTarget = false;
+    if(encodersAreEnabled){
+      currPos = getCurrentPosition();
+      atTarget = onTarget();
+    }
+  
+    String output = "Wrist Info: manual:" + manualOverride;
     output = output + " target:" + targetPosition;
     output = output + " current:" + currPos;
-    output = output + " ontarg:" + onTarget();
+    output = output + " ontarg:" + atTarget;
     output = output + " dir:" + dirMoved;
     output = output + " speed:" + velocity;
+    output = output + " upLimit:" + atUpperLimit();
+    output = output + " loLimit:" + atLowerLimit();
     Robot.Log(output);
   }
 }
