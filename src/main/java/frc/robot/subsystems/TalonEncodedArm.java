@@ -138,7 +138,7 @@ public class TalonEncodedArm extends Subsystem {
 
   public void setPIDPosition(double pos) {
     if(!encodersAreEnabled){
-      Robot.die();
+      return;
     }
 
     // this is called for PID control so turn off

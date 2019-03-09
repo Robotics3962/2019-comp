@@ -93,7 +93,7 @@ public class PIDElevator extends PIDSubsystem {
 
   public void setPIDPosition(double distance){
     if(! useEncoders){
-      Robot.die();
+      return;
     }
 
     targetPosition = distance;

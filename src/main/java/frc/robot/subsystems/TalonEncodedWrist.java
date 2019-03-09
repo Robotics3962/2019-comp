@@ -144,7 +144,7 @@ public class TalonEncodedWrist extends Subsystem {
 
   public void setPIDPosition(double pos) {
     if(!encodersAreEnabled){
-      Robot.die();
+      return;
     }
 
     // this is an automated call so turn off manual control
