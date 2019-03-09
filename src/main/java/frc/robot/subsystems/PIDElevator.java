@@ -31,6 +31,8 @@ public class PIDElevator extends PIDSubsystem {
   private boolean useLimitSwitches = true;
   private boolean useEncoders = true;
   private boolean manualOverride = false;
+  private int count = 0;
+  private final int logMsgInterval = 5;
 
   // holds variables used to determine out of phase encoders
   private Robot.Direction dirMoved = Robot.Direction.NONE; 
@@ -189,31 +191,25 @@ public class PIDElevator extends PIDSubsystem {
   }
 
   public boolean atUpperLimit(){
-    if(!useLimitSwitches){
-      return false;
+    boolean atLimit = false;
+    if(useLimitSwitches){
+      atLimit = topLimit.get();
     }
 
-    return topLimit.get();
+    return atLimit;
   }
 
   public boolean atLowerLimit() {
-    if(!useLimitSwitches){
-      return false;
-    }
-
+    boolean atLimit = false;
+    if(useLimitSwitches){
     // currently the bottom limit switched is wired
     // differently so true is not set and false is set
     // so we need to invert the logic
-    return ! bottomLimit.get();
-  }
-
-  public void dumpLimitSwitchValues(){
-    if(!useLimitSwitches){
-      return;
+    atLimit = ! bottomLimit.get();
     }
 
-    Robot.Log("Elevator: atLowerLimit:" + atLowerLimit() + " atUpperLimit:" + atUpperLimit());
-  }  
+    return atLimit;
+  }
 
   // make sure the motor and encoder are in phase.  This means that
   // when we move the motor with a negative speed, the encoder
@@ -253,5 +249,29 @@ public class PIDElevator extends PIDSubsystem {
     }
     pastPosition = getCurrentPosition();
     return;
+  }
+
+  public void LogInfo(boolean dampen){
+    count++;
+
+    if(dampen && ((count % logMsgInterval) != 0)){
+      return;
+    }
+    double currPos = -1;
+    boolean atTarget = false;
+    if(useEncoders){
+      currPos = getCurrentPosition();
+      atTarget = onTarget();
+    }
+  
+    String output = "Elevator Info: manual:" + manualOverride;
+    output = output + " target:" + targetPosition;
+    output = output + " current:" + currPos;
+    output = output + " ontarg:" + atTarget;
+    output = output + " dir:" + dirMoved;
+    output = output + " speed:" + currSpeed;
+    output = output + " upLimit:" + atUpperLimit();
+    output = output + " boLimit:" + atLowerLimit();
+    Robot.Log(output);
   }
 }

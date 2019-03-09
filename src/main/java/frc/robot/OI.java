@@ -95,12 +95,12 @@ public class OI {
       JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
 
       // map buttons to commands on the has manual adjustments
-      opButtonA.whileHeld(new ArmDownCmd());
-      opButtonB.whileHeld(new ArmUpCmd());
-      opButtonX.whileHeld(new WristDownCmd());
-      opButtonY.whileHeld(new WristUpCmd());
-      opButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
-      opButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
+      opButtonA.whileHeld(new PIDArmDownCmd());
+      opButtonB.whileHeld(new PIDArmUpCmd());
+      opButtonX.whileHeld(new PIDWristDownCmd());
+      opButtonY.whileHeld(new PIDWristUpCmd());
+      opButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.PID));
+      opButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.PID));
 
       // this will run the calibration, it assumes the
       // arm,wrist,and arm are at there powered off positions
