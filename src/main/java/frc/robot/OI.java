@@ -12,6 +12,7 @@ import frc.robot.commands.ElevatorDownCmd;
 import frc.robot.commands.MoveToGrabPositionCmd;
 import frc.robot.commands.TalonArmPIDMove;
 import frc.robot.commands.TalonWristPIDMove;
+import frc.robot.commands.ElevatorDownCmd.Mode;
 import frc.robot.subsystems.PIDElevator;
 import frc.robot.commands.ResetArmEncoderCmd;
 import frc.robot.commands.ResetWristEncoderCmd;
@@ -30,6 +31,10 @@ import frc.robot.commands.PIDArmUpCmd;
 import frc.robot.commands.PIDWristUpCmd;
 import frc.robot.commands.ResetAllEncoders;
 import frc.robot.commands.CalibrateCmd;
+import frc.robot.commands.ArmDownCmd;
+import frc.robot.commands.ArmUpCmd;
+import frc.robot.commands.WristUpCmd;
+import frc.robot.commands.WristDownCmd;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -58,45 +63,58 @@ public class OI {
     JoystickButton driveButtonStart = new JoystickButton(driveJoystick, RobotMap.JoystickButtonStart);
 
     // map buttons to commands on the joystick that drives the robot
-    driveButtonA.whenPressed(new MoveToGrabPositionCmd());
-    driveButtonB.whenPressed(new MoveToShootLowPositionCmd());
-    driveButtonX.whenPressed(new MoveToShootMiddlePositionCmd());
-    driveButtonY.whenPressed(new MoveToShootHighPositionCmd());
-    driveButtonBack.whenPressed(new MoveToStowPositionCmd());
-    driveButtonStart.whenPressed(new MoveToCarryPositionCmd());
-    driveButtonLS.whileHeld(new ShootBallCmd());
-    driveButtonRS.whileHeld(new GrabBallCmd());
+    boolean useDriveStickForEverything = true;
+    if(useDriveStickForEverything){
+      driveButtonA.whileHeld(new ArmDownCmd());
+      driveButtonB.whileHeld(new ArmUpCmd());
+      driveButtonX.whileHeld(new WristDownCmd());
+      driveButtonY.whileHeld(new WristUpCmd());
+      driveButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
+      driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
+    }
+    else{
+      driveButtonA.whenPressed(new MoveToGrabPositionCmd());
+      driveButtonB.whenPressed(new MoveToShootLowPositionCmd());
+      driveButtonX.whenPressed(new MoveToShootMiddlePositionCmd());
+      driveButtonY.whenPressed(new MoveToShootHighPositionCmd());
+      driveButtonBack.whenPressed(new MoveToStowPositionCmd());
+      driveButtonStart.whenPressed(new MoveToCarryPositionCmd());
+      driveButtonLS.whileHeld(new ShootBallCmd());
+      driveButtonRS.whileHeld(new GrabBallCmd());
+    }
 
     // get the buttons on the operational joystick
-    JoystickButton opButtonA = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonA);
-    JoystickButton opButtonB = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonB);
-    JoystickButton opButtonX = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonX);
-    JoystickButton opButtonY = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonY);
-    JoystickButton opButtonLS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderLeft);
-    JoystickButton opButtonRS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderRight);
-    JoystickButton opButtonBack = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonBack);
-    JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
+    if(!useDriveStickForEverything){
+      JoystickButton opButtonA = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonA);
+      JoystickButton opButtonB = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonB);
+      JoystickButton opButtonX = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonX);
+      JoystickButton opButtonY = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonY);
+      JoystickButton opButtonLS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderLeft);
+      JoystickButton opButtonRS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderRight);
+      JoystickButton opButtonBack = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonBack);
+      JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
 
-    // map buttons to commands on the has manual adjustments
-    opButtonA.whileHeld(new PIDArmDownCmd());
-    opButtonB.whileHeld(new PIDArmUpCmd());
-    opButtonX.whileHeld(new PIDWristDownCmd());
-    opButtonY.whileHeld(new PIDWristUpCmd());
-    opButtonLS.whileHeld(new ElevatorDownCmd());
-    opButtonRS.whileHeld(new ElevatorUpCmd());
+      // map buttons to commands on the has manual adjustments
+      opButtonA.whileHeld(new ArmDownCmd());
+      opButtonB.whileHeld(new ArmUpCmd());
+      opButtonX.whileHeld(new WristDownCmd());
+      opButtonY.whileHeld(new WristUpCmd());
+      opButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
+      opButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
 
-    // this will run the calibration, it assumes the
-    // arm,wrist,and arm are at there powered off positions
-    opButtonStart.whenPressed(new CalibrateCmd());
+      // this will run the calibration, it assumes the
+      // arm,wrist,and arm are at there powered off positions
+      opButtonStart.whenPressed(new CalibrateCmd());
 
-    // this should be used only under extreme duress.
-    // will zero the positions of the elevator,arm, and wrist
-    // where they currently are. If the encoders get really out
-    // of sync, hit this button, then use A|B|X|Y|LS|RS to move
-    // the components to the positions they were originally zeroed
-    // at them hit this button so the movetoposition buttons
-    // above will move to the correct positions
-    opButtonBack.whenPressed(new ResetAllEncoders());
+      // this should be used only under extreme duress.
+      // will zero the positions of the elevator,arm, and wrist
+      // where they currently are. If the encoders get really out
+      // of sync, hit this button, then use A|B|X|Y|LS|RS to move
+      // the components to the positions they were originally zeroed
+      // at them hit this button so the movetoposition buttons
+      // above will move to the correct positions
+      opButtonBack.whenPressed(new ResetAllEncoders());
+    }
   }
 
   // these next two functions are legacy functions that get joystick values

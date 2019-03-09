@@ -13,10 +13,12 @@ import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class ElevatorUpCmd extends Command {
-  public ElevatorUpCmd() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+  public enum Mode{ PID, SPEED };
+  private Mode mode;
+
+  public ElevatorUpCmd(Mode controlMode) {
     requires (Robot.pidElevator);
+    mode = controlMode;
   }
 
   // Called just before this Command runs the first time
@@ -27,8 +29,15 @@ public class ElevatorUpCmd extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    double newPos = Robot.pidElevator.getTargetPosition() + RobotMap.ElevatorUpPidDelta;
-    Robot.pidElevator.setPIDPosition(newPos);
+    switch(mode){
+      case PID:
+        double newPos = Robot.pidElevator.getTargetPosition() + RobotMap.ElevatorUpPidDelta;
+        Robot.pidElevator.setPIDPosition(newPos);
+      break;
+      case SPEED:
+        Robot.pidElevator.Up();
+      break;
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
