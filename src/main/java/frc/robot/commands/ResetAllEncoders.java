@@ -27,8 +27,8 @@ public class ResetAllEncoders extends CommandGroup {
     // are in their zero positions. It will need to be
     // moved manually to their zero positions
     addSequential(new ResetArmEncoderCmd());
-    addSequential(new ResetWristEncoderCmd());
-    addSequential(new ResetElevatorEncoderCmd());
+    //addSequential(new ResetWristEncoderCmd());
+    //addSequential(new ResetElevatorEncoderCmd());
 
     // Add Commands here:
     // e.g. addSequential(new Command1());

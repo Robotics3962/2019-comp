@@ -25,9 +25,9 @@ public class MoveToShootMiddlePositionCmd extends CommandGroup {
     requires(Robot.encodedWristTalon);
 
     CollectorPosition componentPositions = Robot.collectorPositions[RobotMap.MiddleBallPosIndex];
-    addSequential(new ElevatorPIDMoveCmd(componentPositions.elevatorPos));
+    //addSequential(new ElevatorPIDMoveCmd(componentPositions.elevatorPos));
     addSequential(new TalonArmPIDMove(componentPositions.armPos));
-    addSequential(new TalonWristPIDMove(componentPositions.wristPos));
+    //addSequential(new TalonWristPIDMove(componentPositions.wristPos));
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());

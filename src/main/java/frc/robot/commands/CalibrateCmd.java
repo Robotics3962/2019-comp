@@ -29,36 +29,35 @@ public class CalibrateCmd extends CommandGroup {
     double currPos;
     double downDistance;
     double target;
-    boolean ArmHasLowerLimitSwitch = false;
+    boolean ArmHasLimitSwitches = true;
     boolean WristHasLowerLimitSwitch = false;
+    boolean ElevatorHasLimitSwitches = false;
 
     // calibrate elevator by moving up, then down to hit limit switch
     // then reset the encoder
     // down should be a large number, it is ok because we want to 
     // make sure we hit the lower limit switch
-    Robot.Log("Elevator calibration start");
-    currPos = Robot.pidElevator.getCurrentPosition();
-    downDistance = RobotMap.ElevatorCalibrateDownDist;
-    target = currPos + RobotMap.ElevatorCalibrateUpDist;
-    addSequential(new ElevatorPIDMoveCmd(target));
-    addSequential(new ElevatorPIDMoveCmd(downDistance));
-    addSequential(new ResetElevatorEncoderCmd());
-    Robot.Log("Elevator calibration completed");
+    if(ElevatorHasLimitSwitches) {
+      Robot.Log("Elevator calibration start");
+      currPos = Robot.pidElevator.getCurrentPosition();
+      downDistance = RobotMap.ElevatorCalibrateDownDist;
+      target = currPos + RobotMap.ElevatorCalibrateUpDist;
+      addSequential(new ElevatorPIDMoveCmd(target));
+      addSequential(new ElevatorPIDMoveCmd(downDistance));
+      addSequential(new ResetElevatorEncoderCmd());
+      Robot.Log("Elevator calibration completed");
+    }
 
-    Robot.Log("Arm calibration start");
-    if(ArmHasLowerLimitSwitch){
+    if(ArmHasLimitSwitches){
       // this assumes there is a lower limit switch on the arm
       // and that the arm position is near it
-      currPos = Robot.encodedArmTalon.getCurrentPosition();
-      target = currPos + RobotMap.TalonArmCalibrateUpDist;
-      addSequential(new TalonArmPIDMove(target));
+      addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateUpDist));
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateDownDist));
-      addSequential(new ResetArmEncoderCmd());
+      //addSequential(new ResetArmEncoderCmd());
     }
     else {
       addSequential(new ResetArmEncoderCmd());
     }
-    Robot.Log("Arm calibration completed");
   
     Robot.Log("Wrist calibration start");
     if(WristHasLowerLimitSwitch){
