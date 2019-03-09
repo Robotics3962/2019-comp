@@ -97,6 +97,10 @@ public class PIDElevator extends PIDSubsystem {
     }
 
     targetPosition = distance;
+
+    // start the timing loop after we set the distance
+    // this is needed for PID loop to start working
+    getPIDController().enable();  
   }
 
   public void holdPosition(){
@@ -104,7 +108,7 @@ public class PIDElevator extends PIDSubsystem {
       return;
     }
 
-    move();    
+    move();
   }
 
   public void move(){
@@ -114,7 +118,6 @@ public class PIDElevator extends PIDSubsystem {
     // start the timing loop after we set the distance
     // this is needed for PID loop to start working
     getPIDController().enable();  
-
   }
 
   public void resetEncoder(){
