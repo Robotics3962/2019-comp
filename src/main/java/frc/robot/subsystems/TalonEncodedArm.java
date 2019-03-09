@@ -58,7 +58,7 @@ public class TalonEncodedArm extends Subsystem {
   private DigitalInput bottomLimit = null; //new DigitalInput(RobotMap.LimitSwitchPIOId3);
 
   public TalonEncodedArm() {
-    encodersAreEnabled = true;
+    encodersAreEnabled = false;
     limitSwAreEnabled = false;
 
     targetPosition = 0;
@@ -329,10 +329,10 @@ public class TalonEncodedArm extends Subsystem {
     manualOverride = true;
     velocity = val;
     motor1.set(ControlMode.PercentOutput, velocity);
-    LogInfo(true);  
   }
 
   public void Up(){
+    LogInfo(true);  
     if (atUpperLimit()){
       Stop();
     }
@@ -345,6 +345,7 @@ public class TalonEncodedArm extends Subsystem {
   }
 
   public void Down(){
+    LogInfo(true);  
     if (atLowerLimit()){
       Stop();
     }
@@ -368,6 +369,7 @@ public class TalonEncodedArm extends Subsystem {
     if(dampen && ((count % logMsgInterval) != 0)){
       return;
     }
+
     double currPos = -1;
     boolean atTarget = false;
     if(encodersAreEnabled){
@@ -382,7 +384,7 @@ public class TalonEncodedArm extends Subsystem {
     output = output + " dir:" + dirMoved;
     output = output + " speed:" + velocity;
     output = output + " upLimit:" + atUpperLimit();
-    output = output + " loLimit:" + atLowerLimit();
+    output = output + " boLimit:" + atLowerLimit();
     Robot.Log(output);
   }
 }

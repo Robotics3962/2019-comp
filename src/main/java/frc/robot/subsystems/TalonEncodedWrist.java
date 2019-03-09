@@ -318,7 +318,7 @@ public class TalonEncodedWrist extends Subsystem {
       if( check && (Math.abs(deltaPos) > RobotMap.EncoderSlop) ){
         double deltaPosSign = Math.copySign(1, deltaPos);
         if( deltaPosSign != sign){
-          Robot.Log("Wrist encoder is out of Phase from Wrist Motor");
+          Robot.Log("Wrist encoder is out of Phase from Wrist Motor dir:" + dirMoved + " deltapos:" + deltaPos);
           Robot.die();
         }
       }
@@ -340,7 +340,7 @@ public class TalonEncodedWrist extends Subsystem {
   }
 
   public void Up(){
-    LogValues(true);
+    LogInfo(true);
     if (atUpperLimit()){
       stop();
     }
@@ -352,7 +352,7 @@ public class TalonEncodedWrist extends Subsystem {
   }
 
   public void Down(){
-    LogValues(true);
+    LogInfo(true);
     if (atLowerLimit()){
       stop();
     }
@@ -390,7 +390,7 @@ public class TalonEncodedWrist extends Subsystem {
     output = output + " dir:" + dirMoved;
     output = output + " speed:" + velocity;
     output = output + " upLimit:" + atUpperLimit();
-    output = output + " loLimit:" + atLowerLimit();
+    output = output + " boLimit:" + atLowerLimit();
     Robot.Log(output);
   }
 }
