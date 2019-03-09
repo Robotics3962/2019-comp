@@ -90,10 +90,10 @@ public class RobotMap {
   public static final double TalonArmCalibrateDownDist = 1000;
 
   //wrist
-  public static final double TalonWristUpSpeed = -.6;
-  public static final double TalonWristUpPidDelta = -20; // match sign of upspeed
-  public static final double TalonWristDownSpeed = .6;
-  public static final double TalonWristDownPidDelta = 20; // match sign of down speed
+  public static final double TalonWristUpSpeed = 0.3;
+  public static final double TalonWristUpPidDelta = 20; // match sign of upspeed
+  public static final double TalonWristDownSpeed = -0.3;
+  public static final double TalonWristDownPidDelta = -20; // match sign of down speed
   public static final double TalonWristStopSpeed = .001;
   public static final double TalonWristAbsTolerance = 5;
   public static final int    TalonWristCruiseSpeed = 15000;
@@ -157,7 +157,7 @@ public class RobotMap {
   public static final double RotationScaleFactor = 0.45;
 
   // this is used to make the encoder phase check less sensitive
-  public static final double EncoderSlop = 1;
+  public static final double EncoderSlop = 2;
 
   // position of elevator,arm and wrist to grab a ball
   public static final int    GrabBallPosIndex = 0;
