@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.commands.ElevatorPIDMoveCmd;
 import frc.robot.commands.ResetElevatorEncoderCmd;
 import frc.robot.commands.TalonArmPIDMove;
@@ -53,9 +54,9 @@ public class CalibrateCmd extends CommandGroup {
       // this assumes there is a lower limit switch on the arm
       // and that the arm position is near it
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateUpDist));
-      addSequential(new PauseCmd(150));
+      addSequential(new WaitCommand(5));
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateDownDist));
-      addSequential(new PauseCmd(150));
+      addSequential(new WaitCommand(5));
       addSequential(new ResetArmEncoderCmd());
     }
     else {
