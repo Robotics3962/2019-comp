@@ -37,12 +37,13 @@ public class TalonEncodedArm extends Subsystem {
   private WPI_TalonSRX motor2;
   private double targetPosition;
   private double velocity;
-  private boolean encodersAreEnabled = false;
-  private static boolean ArmlimitsAreEnabled = true; //used to be private
-  private static boolean manualOverride = true;
+  private boolean encodersAreEnabled = true;
+  private boolean ArmlimitsAreEnabled = true; //used to be private
+  private boolean manualOverride = false;
   private int count = 0;
-  private int logMsgInterval = 5;
-
+  private int logMsgInterval = 50;
+  private double prevPosition = 0;
+  
   // set to false to use position, set to true to
   // use motion magic.  girls of steel uses motion magic for
   // what looks to be an elevator, but not for what looks
@@ -51,6 +52,7 @@ public class TalonEncodedArm extends Subsystem {
 
   // holds variables used to determine out of phase encoders
   private Robot.Direction dirMoved = Robot.Direction.NONE; 
+  private Robot.Direction pidDirMoved = Robot.Direction.NONE; 
   private double pastPosition = 0.0;
 
   //Limit switches;
@@ -58,8 +60,6 @@ public class TalonEncodedArm extends Subsystem {
   private DigitalInput bottomLimit = null; //new DigitalInput(RobotMap.LimitSwitchPIOId3);
 
   public TalonEncodedArm() {
-    encodersAreEnabled = false;
-    ArmlimitsAreEnabled = true;
 
     targetPosition = 0;
     velocity = 0;
@@ -79,8 +79,8 @@ public class TalonEncodedArm extends Subsystem {
     /* gos doesn't call these functions */
 		motor1.configNominalOutputForward(0, TALONRSX_TIMEOUT);
 		motor1.configNominalOutputReverse(0, TALONRSX_TIMEOUT);
-		motor1.configPeakOutputForward(RobotMap.TalonMaxOutput, TALONRSX_TIMEOUT);
-    motor1.configPeakOutputReverse(RobotMap.TalonMinOutput, TALONRSX_TIMEOUT);
+		motor1.configPeakOutputForward(RobotMap.TalonArmMaxOutput, TALONRSX_TIMEOUT);
+    motor1.configPeakOutputReverse(RobotMap.TalonArmMinOutput, TALONRSX_TIMEOUT);
 
     // this could be either true or false, we have to determine
     // how it is confgured
@@ -102,7 +102,7 @@ public class TalonEncodedArm extends Subsystem {
           PRIMARY_ENCODER_IDX, 
           ENCODER_CONFIG_TIMEOUT);
 
-      motor1.setSensorPhase(false);
+      motor1.setSensorPhase(true);
 
       /* Set relevant frame periods to be at least as fast as periodic rate */
       /* DJD I don't know what this does                                    */
@@ -141,17 +141,50 @@ public class TalonEncodedArm extends Subsystem {
       return;
     }
 
+    // need different P factors for down vs up
+    // so we keep track of direction, if we move
+    // from up to down we set the down pid, otherwise
+    // we set the up pid.  the up p is way too much for
+    // the down direction, the alernative is to somehow
+    // limit the down voltage.
+
+    if((pos>=0) && (prevPosition < 0)){
+      // if i'm moving in a positive direction and the
+      // previous direction was negative, then change the
+      // p value to the up p value
+      Robot.Log("Changing P to UP");
+      pidDirMoved = Direction.UP;
+      motor1.config_kP(0, RobotMap.TalonArmPID_P, ENCODER_CONFIG_TIMEOUT);      
+      CleanUpPositionsAndLimits(Direction.UP);     
+    }
+    else if((pos < 0) && (prevPosition >= 0)){
+      // if i'm moving in a negative direction and the
+      // previous direction was positive, then change the
+      // p value to the down p value
+      Robot.Log("change P to down");
+      pidDirMoved = Direction.DOWN;
+      motor1.config_kP(0, RobotMap.TalonArmPIDDown_P, ENCODER_CONFIG_TIMEOUT); 
+      CleanUpPositionsAndLimits(Direction.DOWN);     
+    }
+
+    double delta = getCurrentPosition() + pos;
+
     // this is called for PID control so turn off
     // manual override, also turn off phase
     // checking
+    //Robot.die();
     manualOverride = false;
     dirMoved = Direction.NONE;
 
     Robot.Log("Arm setPidPosition:" + pos);
-    targetPosition = pos;
+    targetPosition = AdjustTargetPositionForLimits(pos);
 
     // don't need to move the arm as the background command
     // will take care of that
+
+    // keep track of the position being moved to
+    // so we can detect direction change
+    prevPosition = pos;
   }
 
   public void stop() {
@@ -194,6 +227,10 @@ public class TalonEncodedArm extends Subsystem {
       complete = true;
       Robot.Log("Arm Talon encoder reset is complete");
     }
+    else {
+      Robot.Log("Arm Talon encoder reset is not complete");
+    }
+
     return complete;
   }
 
@@ -223,23 +260,70 @@ public class TalonEncodedArm extends Subsystem {
 
     // only move via PID when we are not manually controlling
     if(!manualOverride){
-      // if we have reached the limits, then make sure
-      // we don't move past them, so set the position we
-      // want to move to to the current position
-      // so we stop moving
-      if(atLowerLimit() || atUpperLimit()){
-        targetPosition = getCurrentPosition();
-      }
+      CheckForOverruns();
+
       if(useMotionMagic){
         motor1.set(ControlMode.MotionMagic, targetPosition);
       }
       else {
         motor1.set(ControlMode.Position, targetPosition);
       }
+      // this takes care of the situation where the current pos
+      // passes the targetpos and a limit switch is hit in the time
+      // between when we checked before we moved the motor
+      CheckForOverruns();
       LogInfo(true);
     }
   }
+  
+  public void CheckForOverruns(){
+    double newTargetPosition;
+    newTargetPosition = AdjustTargetPositionForLimits(targetPosition);
+    if(newTargetPosition != targetPosition){
+      targetPosition = newTargetPosition;
+      Robot.Log("Adjusting targetposition2");
+    }
+  }
 
+  private double AdjustTargetPositionForLimits(double target){
+      double adjustedPos = target;
+
+      // if we have reached the limits, then make sure
+      // we don't move past them, so set the position we
+      // want to move to to the current position
+      // so we stop moving
+      if(target > getCurrentPosition() && atUpperLimit()){
+        adjustedPos = getCurrentPosition();
+        Robot.Log("target Pos > current pos, setting target from " + target + " to " + adjustedPos);
+      }
+      
+      if(target < getCurrentPosition() && atLowerLimit()){
+        adjustedPos = getCurrentPosition();
+        Robot.Log("target Pos < current pos, setting target from " + target + " to " + adjustedPos);
+      }
+
+      return adjustedPos;
+  }
+
+  private void CleanUpPositionsAndLimits(Direction dir){
+    double adjustedPos;
+    double currPos = getCurrentPosition();
+    switch(dir){
+      case UP:
+        if(atUpperLimit() && (currPos > targetPosition)){
+          targetPosition = currPos;
+        }
+        break;
+      case DOWN:
+      if(atLowerLimit() && (currPos < targetPosition)){
+        targetPosition = currPos;
+      }
+      break;
+      case NONE:
+        break;
+    }
+  }
+  
   public boolean onTarget(){
     if(!encodersAreEnabled){
       Robot.die();
@@ -269,6 +353,11 @@ public class TalonEncodedArm extends Subsystem {
       atLimit = topLimit.get();
     }
 
+    if(atLimit & (targetPosition > getCurrentPosition())){
+      Robot.Log("at upper limit adjust from " + targetPosition + " to " + getCurrentPosition());
+      targetPosition = getCurrentPosition();
+    }
+
     return atLimit;
   }
 
@@ -278,6 +367,11 @@ public class TalonEncodedArm extends Subsystem {
       atLimit = bottomLimit.get();
     }
     
+    if(atLimit && (targetPosition < getCurrentPosition())){
+      Robot.Log("at lower limit adjust from " + targetPosition + " to " + getCurrentPosition());
+      targetPosition = getCurrentPosition();
+    }
+
     return atLimit;
   }
 
@@ -325,15 +419,22 @@ public class TalonEncodedArm extends Subsystem {
   // outside of the PID control
 
   public void setTalonSpeed(double val){
+
+    targetPosition = getCurrentPosition();
+    
     // this command is used to manually move the
     // motor so set the variable that stops the PID
-    // from overriding 
+    // from overriding
+    Robot.die(); 
     manualOverride = true;
     velocity = val;
     motor1.set(ControlMode.PercentOutput, velocity);
   }
 
   public void Up(){
+    // stop the pid loop from moving the motor
+    targetPosition = getCurrentPosition();
+
     LogInfo(true);  
     if (atUpperLimit()){
       Stop();
@@ -347,6 +448,8 @@ public class TalonEncodedArm extends Subsystem {
   }
 
   public void Down(){
+    // stop the pid loop from moving the motor
+    targetPosition = getCurrentPosition();
     LogInfo(true);  
     if (atLowerLimit()){
       Stop();
@@ -389,12 +492,12 @@ public class TalonEncodedArm extends Subsystem {
     output = output + " boLimit:" + atLowerLimit();
     Robot.Log(output);
 
-    Robot.UpdateDashboard("Arm.manual", manualOverride); 
-    Robot.UpdateDashboard("Arm.targetPos", targetPosition); 
-    Robot.UpdateDashboard("Arm.currPos", currPos);
-    Robot.UpdateDashboard("Arm.speed", velocity);
-    Robot.UpdateDashboard("Arm.upLimit", atUpperLimit());
-    Robot.UpdateDashboard("Arm.loLimit", atLowerLimit());
+    //Robot.UpdateDashboard("Arm.manual", manualOverride); 
+    //Robot.UpdateDashboard("Arm.targetPos", targetPosition); 
+    //Robot.UpdateDashboard("Arm.currPos", currPos);
+    //Robot.UpdateDashboard("Arm.speed", velocity);
+    //Robot.UpdateDashboard("Arm.upLimit", atUpperLimit());
+    //Robot.UpdateDashboard("Arm.loLimit", atLowerLimit());
   }
 }
 

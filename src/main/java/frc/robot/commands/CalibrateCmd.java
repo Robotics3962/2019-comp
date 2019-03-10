@@ -14,6 +14,7 @@ import frc.robot.commands.TalonArmPIDMove;
 import frc.robot.commands.TalonWristPIDMove;
 import frc.robot.commands.ResetArmEncoderCmd;
 import frc.robot.commands.ResetWristEncoderCmd;
+import frc.robot.commands.PauseCmd;
 import frc.robot.RobotMap;
 import frc.robot.Robot;
 
@@ -22,9 +23,9 @@ public class CalibrateCmd extends CommandGroup {
    * Add your docs here.
    */
   public CalibrateCmd() {
-    requires(Robot.pidElevator);
-    requires(Robot.encodedArmTalon);
-    requires(Robot.encodedWristTalon);
+    //requires(Robot.pidElevator);
+    //requires(Robot.encodedArmTalon);
+    //requires(Robot.encodedWristTalon);
 
     double currPos;
     double downDistance;
@@ -52,6 +53,7 @@ public class CalibrateCmd extends CommandGroup {
       // this assumes there is a lower limit switch on the arm
       // and that the arm position is near it
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateUpDist));
+      addSequential(new PauseCmd(500));
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateDownDist));
       //addSequential(new ResetArmEncoderCmd());
     }

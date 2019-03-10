@@ -8,33 +8,30 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Robot;
-import frc.robot.RobotMap;
 
-public class PIDArmUpCmd extends Command {
-  public PIDArmUpCmd() {
-    requires(Robot.encodedArmTalon);
+public class PauseCmd extends Command {
+  private int count;
+  private int executeCount = 0;
+  public PauseCmd(int runCount) {
+    count = runCount;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-      // make sure this is the right direction
-      double newPos = Robot.encodedArmTalon.getTargetPosition() + RobotMap.TalonArmUpPidDelta;
-      Robot.encodedArmTalon.setPIDPosition(newPos);
-      Robot.Log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
- }
+    executeCount = 0;
+  }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    
+    executeCount++;
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return (executeCount == count);
   }
 
   // Called once after isFinished returns true
@@ -46,6 +43,5 @@ public class PIDArmUpCmd extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-      end();
   }
 }

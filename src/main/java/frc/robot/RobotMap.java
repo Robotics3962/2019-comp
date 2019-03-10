@@ -55,8 +55,8 @@ public class RobotMap {
   public static final int TalonDriveLeftBack = 3;
   public static final int TalonDriveRightFront = 1;
   public static final int TalonDriveRightRear = 4;
-  public static final double TalonMinOutput = -0.5;
-  public static final double TalonMaxOutput = 0.5;
+  public static final double TalonMinOutput = -0.25;
+  public static final double TalonMaxOutput = 0.3;
 
   /// generic
   public static final double TalonUpSpeed = -.2;
@@ -74,20 +74,23 @@ public class RobotMap {
 
 
   //arm
-  public static final double TalonArmUpSpeed = .2;
+  public static final double TalonArmMinOutput = -0.20;
+  public static final double TalonArmMaxOutput = 0.3;
+  public static final double TalonArmUpSpeed = .3;
   public static final double TalonArmUpPidDelta = 20; // match sign of upspeed
   public static final double TalonArmDownSpeed = -.2;
   public static final double TalonArmDownPidDelta = -20; // match sign of down speed
   public static final double TalonSrmStopSpeed = .001;
-  public static final double TalonArmAbsTolerance = 5;
+  public static final double TalonArmAbsTolerance = 2.5;
   public static final int    TalonArmCruiseSpeed = 15000;
   public static final int    TalonArmAcceleration = 6000;
-  public static final double TalonArmPID_P = 4; //0.2;
-  public static final double TalonArmPID_I = 0.0;
+  public static final double TalonArmPID_P = 1.28; //0.2;
+  public static final double TalonArmPIDDown_P = 1.28; //0.2;
+  public static final double TalonArmPID_I = 0.0; //be careful when chnaging, speed increases by a ridiculous amount
   public static final double TalonArmPID_D = 0.0;
   public static final double TalonArmPID_F = 0.0;
-  public static final double TalonArmCalibrateUpDist = -100;
-  public static final double TalonArmCalibrateDownDist = 1000;
+  public static final double TalonArmCalibrateUpDist = 300;
+  public static final double TalonArmCalibrateDownDist = -300;
 
   //wrist
   public static final double TalonWristUpSpeed = 0.3;
@@ -162,25 +165,25 @@ public class RobotMap {
   // position of elevator,arm and wrist to grab a ball
   public static final int    GrabBallPosIndex = 0;
   public static final double GrabBallElevatorPos = 10;
-  public static final double GrabBallArmPos = 100;
+  public static final double GrabBallArmPos = 20;
   public static final double GrabBallWristPos = 100;
 
   // position of elevator,arm stow position
   public static final int    StowPosIndex = 1;
   public static final double StowBallElevatorPos = 20;
-  public static final double StowBallArmPos = 200;
+  public static final double StowBallArmPos = 100;
   public static final double StowBallWristPos = 200;
   
   // position of elevator,arm to put in low hole
   public static final int    LowBallPosIndex = 2;
   public static final double LowBallElevatorPos = 30;
-  public static final double LowBallArmPos = 200;
+  public static final double LowBallArmPos = 50;
   public static final double LowBallWristPos = 200;
 
   // position of elevator,arm to put in middle hole
   public static final int    MiddleBallPosIndex = 3;
   public static final double MiddleBallElevatorPos = 30;
-  public static final double MiddleBallArmPos = 200;
+  public static final double MiddleBallArmPos = 100;
   public static final double MiddleBallWristPos = 200;
   
   // position of elevator,arm to put in high hole
@@ -192,7 +195,7 @@ public class RobotMap {
   // position of elevator,arm carry ball
   public static final int    CarryBallPosIndex = 5;
   public static final double CarryBallElevatorPos = 30;
-  public static final double CarryBallArmPos = 200;
+  public static final double CarryBallArmPos = 100;
   public static final double CarryBallWristPos = 200;
 
   public static final int    MaxBallPosIndex = 6;

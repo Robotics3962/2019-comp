@@ -164,6 +164,7 @@ public class PIDElevator extends PIDSubsystem {
   // used to manually set the speed which will disable pid control
   public void setSpeed(double speed){
     currSpeed = speed;
+    Robot.die();
     manualOverride = true;
 
     // make sure we turn off the pid loop

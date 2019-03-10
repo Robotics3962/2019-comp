@@ -15,7 +15,7 @@ public class TalonArmPIDMove extends Command {
   private double positionToMoveTo;
 
   public TalonArmPIDMove(double pos) {
-    requires(Robot.encodedArmTalon);
+    //requires(Robot.encodedArmTalon);
     positionToMoveTo = pos;
   }
 
@@ -29,13 +29,18 @@ public class TalonArmPIDMove extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    // in initialize, we told the motor where to move.
+    // if a limit switch is set and we over ran it, we 
+    // need to check to allow the command to finish
+    Robot.encodedArmTalon.CheckForOverruns();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
     boolean done = Robot.encodedArmTalon.onTarget();
-    Robot.Log("Arm TalonPidMove done:" + done);
+    //Robot.Log("Arm TalonPidMove done:" + done);
+    //Robot.encodedArmTalon.LogInfo((true));
     return done;
   }
 

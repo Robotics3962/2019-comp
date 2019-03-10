@@ -71,6 +71,9 @@ public class OI {
       driveButtonY.whileHeld(new WristUpCmd());
       driveButtonLS.whileHeld(new ShootBallCmd());
       driveButtonRS.whileHeld(new GrabBallCmd());
+      driveButtonBack.whenPressed(new ResetArmEncoderCmd());
+      driveButtonStart.whenPressed(new CalibrateCmd());
+
       //driveButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
       //driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
     }
@@ -85,8 +88,8 @@ public class OI {
       driveButtonRS.whileHeld(new GrabBallCmd());
     }
 
-    // get the buttons on the operational joystick
-    if(!useDriveStickForEverything){
+    if(false){
+      // get the buttons on the operational joystick
       JoystickButton opButtonA = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonA);
       JoystickButton opButtonB = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonB);
       JoystickButton opButtonX = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonX);
@@ -97,26 +100,28 @@ public class OI {
       JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
 
       // map buttons to commands on the has manual adjustments
-      opButtonA.whileHeld(new PIDArmDownCmd());
-      opButtonB.whileHeld(new PIDArmUpCmd());
-      opButtonX.whileHeld(new PIDWristDownCmd());
-      opButtonY.whileHeld(new PIDWristUpCmd());
-      opButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.PID));
-      opButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.PID));
+        opButtonA.whileHeld(new PIDArmDownCmd());
+        opButtonB.whileHeld(new PIDArmUpCmd());
 
-      // this will run the calibration, it assumes the
-      // arm,wrist,and arm are at there powered off positions
-      opButtonStart.whenPressed(new CalibrateCmd());
+        opButtonX.whileHeld(new PIDWristDownCmd());
+        opButtonY.whileHeld(new PIDWristUpCmd());
+        opButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.PID));
+        opButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.PID));
 
-      // this should be used only under extreme duress.
-      // will zero the positions of the elevator,arm, and wrist
-      // where they currently are. If the encoders get really out
-      // of sync, hit this button, then use A|B|X|Y|LS|RS to move
-      // the components to the positions they were originally zeroed
-      // at them hit this button so the movetoposition buttons
-      // above will move to the correct positions
-      opButtonBack.whenPressed(new ResetAllEncoders());
+        // this will run the calibration, it assumes the
+        // arm,wrist,and arm are at there powered off positions
+        opButtonStart.whenPressed(new CalibrateCmd());
+
+        // this should be used only under extreme duress.
+        // will zero the positions of the elevator,arm, and wrist
+        // where they currently are. If the encoders get really out
+        // of sync, hit this button, then use A|B|X|Y|LS|RS to move
+        // the components to the positions they were originally zeroed
+        // at them hit this button so the movetoposition buttons
+        // above will move to the correct positions
+        opButtonBack.whenPressed(new ResetAllEncoders());
     }
+
   }
 
   // these next two functions are legacy functions that get joystick values
