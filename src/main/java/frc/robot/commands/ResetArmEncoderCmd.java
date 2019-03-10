@@ -13,7 +13,7 @@ import frc.robot.subsystems.TalonEncodedArm;
 
 public class ResetArmEncoderCmd extends Command {
   public ResetArmEncoderCmd() {
-    requires(Robot.encodedArmTalon);
+    //requires(Robot.encodedArmTalon);
   }
 
   // Called just before this Command runs the first time

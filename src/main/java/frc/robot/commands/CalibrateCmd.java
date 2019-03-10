@@ -53,9 +53,10 @@ public class CalibrateCmd extends CommandGroup {
       // this assumes there is a lower limit switch on the arm
       // and that the arm position is near it
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateUpDist));
-      addSequential(new PauseCmd(500));
+      addSequential(new PauseCmd(150));
       addSequential(new TalonArmPIDMove(RobotMap.TalonArmCalibrateDownDist));
-      //addSequential(new ResetArmEncoderCmd());
+      addSequential(new PauseCmd(150));
+      addSequential(new ResetArmEncoderCmd());
     }
     else {
       addSequential(new ResetArmEncoderCmd());

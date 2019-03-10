@@ -20,9 +20,9 @@ public class MoveToGrabPositionCmd extends CommandGroup {
    * Add your docs here.
    */
   public MoveToGrabPositionCmd() {
-    requires(Robot.pidElevator);
-    requires(Robot.encodedArmTalon);
-    requires(Robot.encodedWristTalon);
+    //requires(Robot.pidElevator);
+    //requires(Robot.encodedArmTalon);
+    //requires(Robot.encodedWristTalon);
 
     CollectorPosition componentPositions = Robot.collectorPositions[RobotMap.GrabBallPosIndex];
     //addSequential(new TalonWristPIDMove(componentPositions.wristPos));

@@ -20,9 +20,9 @@ public class MoveToStowPositionCmd extends CommandGroup {
    * Add your docs here.
    */
   public MoveToStowPositionCmd() {
-    requires(Robot.pidElevator);
-    requires(Robot.encodedArmTalon);
-    requires(Robot.encodedWristTalon);
+    //requires(Robot.pidElevator);
+    //requires(Robot.encodedArmTalon);
+    //requires(Robot.encodedWristTalon);
 
     CollectorPosition componentPositions = Robot.collectorPositions[RobotMap.StowPosIndex];
     //addSequential(new ElevatorPIDMoveCmd(componentPositions.elevatorPos));

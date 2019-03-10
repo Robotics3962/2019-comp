@@ -63,7 +63,7 @@ public class OI {
     JoystickButton driveButtonStart = new JoystickButton(driveJoystick, RobotMap.JoystickButtonStart);
 
     // map buttons to commands on the joystick that drives the robot
-    boolean useDriveStickForEverything = true;
+    boolean useDriveStickForEverything = false;
     if(useDriveStickForEverything){
       driveButtonA.whileHeld(new ArmDownCmd());
       driveButtonB.whileHeld(new ArmUpCmd());
@@ -83,7 +83,7 @@ public class OI {
       driveButtonX.whenPressed(new MoveToShootMiddlePositionCmd());
       driveButtonY.whenPressed(new MoveToShootHighPositionCmd());
       driveButtonBack.whenPressed(new MoveToStowPositionCmd());
-      driveButtonStart.whenPressed(new MoveToCarryPositionCmd());
+      driveButtonStart.whenPressed(new CalibrateCmd());
       driveButtonLS.whileHeld(new ShootBallCmd());
       driveButtonRS.whileHeld(new GrabBallCmd());
     }

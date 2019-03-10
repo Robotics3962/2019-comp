@@ -74,7 +74,7 @@ public class RobotMap {
 
 
   //arm
-  public static final double TalonArmMinOutput = -0.20;
+  public static final double TalonArmMinOutput = -0.10;
   public static final double TalonArmMaxOutput = 0.3;
   public static final double TalonArmUpSpeed = .3;
   public static final double TalonArmUpPidDelta = 20; // match sign of upspeed
@@ -88,7 +88,7 @@ public class RobotMap {
   public static final double TalonArmPIDDown_P = 1.28; //0.2;
   public static final double TalonArmPID_I = 0.0; //be careful when chnaging, speed increases by a ridiculous amount
   public static final double TalonArmPID_D = 0.0;
-  public static final double TalonArmPID_F = 0.0;
+  public static final double TalonArmPID_F = 0.02;
   public static final double TalonArmCalibrateUpDist = 300;
   public static final double TalonArmCalibrateDownDist = -300;
 
@@ -189,7 +189,7 @@ public class RobotMap {
   // position of elevator,arm to put in high hole
   public static final int    HighBallPosIndex = 4;
   public static final double HighBallElevatorPos = 30;
-  public static final double HighBallArmPos = 200;
+  public static final double HighBallArmPos = 125;
   public static final double HighBallWristPos = 200;
 
   // position of elevator,arm carry ball

@@ -8,10 +8,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;
 
 public class PauseCmd extends Command {
   private int count;
   private int executeCount = 0;
+  private final int logMsgInterval = 10;
+
   public PauseCmd(int runCount) {
     count = runCount;
   }
@@ -31,6 +34,9 @@ public class PauseCmd extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
+    if((count % logMsgInterval) == 0){
+      Robot.Log("Pausing " + executeCount + "/" + count);
+    }
     return (executeCount == count);
   }
 
