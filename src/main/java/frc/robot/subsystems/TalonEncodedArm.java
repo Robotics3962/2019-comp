@@ -43,6 +43,7 @@ public class TalonEncodedArm extends Subsystem {
   private int count = 0;
   private int logMsgInterval = 50;
   private double prevPosition = 0;
+  private boolean isInitialization = true;
   
   // set to false to use position, set to true to
   // use motion magic.  girls of steel uses motion magic for
@@ -116,7 +117,7 @@ public class TalonEncodedArm extends Subsystem {
       motor1.selectProfileSlot(ENCODER_SLOT_INDEX, PRIMARY_ENCODER_IDX);
 
       motor1.config_kF(0, RobotMap.TalonArmPID_F, ENCODER_CONFIG_TIMEOUT);
-      motor1.config_kP(0, RobotMap.TalonArmPID_P, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kP(0, RobotMap.TalonArmInitPIDUp_P, ENCODER_CONFIG_TIMEOUT);
       motor1.config_kI(0, RobotMap.TalonArmPID_I, ENCODER_CONFIG_TIMEOUT);
       motor1.config_kD(0, RobotMap.TalonArmPID_D, ENCODER_CONFIG_TIMEOUT);
   
@@ -134,6 +135,10 @@ public class TalonEncodedArm extends Subsystem {
     motor2.setNeutralMode(NeutralMode.Brake);
 
     Robot.Log("Arm Talon is initialized");
+  }
+
+  public void SetInitialization(boolean init){
+    isInitialization = init;
   }
 
   public void setPIDPosition(double pos) {
@@ -154,7 +159,8 @@ public class TalonEncodedArm extends Subsystem {
       // p value to the up p value
       Robot.Log("Changing P to UP");
       pidDirMoved = Direction.UP;
-      motor1.config_kP(0, RobotMap.TalonArmPID_P, ENCODER_CONFIG_TIMEOUT);      
+      double p = isInitialization ? RobotMap.TalonArmInitPIDUp_P : RobotMap.TalonArmMovePIDUp_P;
+      motor1.config_kP(0, p, ENCODER_CONFIG_TIMEOUT);      
       CleanUpPositionsAndLimits(Direction.UP);     
     }
     else if((pos < 0) && (prevPosition >= 0)){
@@ -163,7 +169,8 @@ public class TalonEncodedArm extends Subsystem {
       // p value to the down p value
       Robot.Log("change P to down");
       pidDirMoved = Direction.DOWN;
-      motor1.config_kP(0, RobotMap.TalonArmPIDDown_P, ENCODER_CONFIG_TIMEOUT); 
+      double p = isInitialization ? RobotMap.TalonArmInitPIDDown_P : RobotMap.TalonArmMovePIDDown_P;
+      motor1.config_kP(0, p, ENCODER_CONFIG_TIMEOUT); 
       CleanUpPositionsAndLimits(Direction.DOWN);     
     }
 

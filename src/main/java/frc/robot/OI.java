@@ -30,6 +30,7 @@ import frc.robot.commands.PIDWristDownCmd;
 import frc.robot.commands.PIDArmUpCmd;
 import frc.robot.commands.PIDWristUpCmd;
 import frc.robot.commands.ResetAllEncoders;
+import frc.robot.commands.ResetArmEncoderCmd;
 import frc.robot.commands.CalibrateCmd;
 import frc.robot.commands.ArmDownCmd;
 import frc.robot.commands.ArmUpCmd;
@@ -74,7 +75,7 @@ public class OI {
       driveButtonBack.whenPressed(new ResetArmEncoderCmd());
       driveButtonStart.whenPressed(new CalibrateCmd());
 
-      //driveButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
+      //driveButtonLS.whenPressed(new ElevatorDownCmd());
       //driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
     }
     else{
@@ -84,8 +85,9 @@ public class OI {
       driveButtonY.whenPressed(new MoveToShootHighPositionCmd());
       driveButtonBack.whenPressed(new MoveToStowPositionCmd());
       driveButtonStart.whenPressed(new CalibrateCmd());
-      driveButtonLS.whileHeld(new ShootBallCmd());
+      //driveButtonLS.whileHeld(new ShootBallCmd());
       driveButtonRS.whileHeld(new GrabBallCmd());
+      driveButtonLS.whenPressed(new ResetArmEncoderCmd());
     }
 
     if(false){
