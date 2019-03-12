@@ -29,10 +29,6 @@ public class TalonArmPIDMove extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // in initialize, we told the motor where to move.
-    // if a limit switch is set and we over ran it, we 
-    // need to check to allow the command to finish
-    Robot.encodedArmTalon.CheckForOverruns();
   }
 
   // Make this return true when this Command no longer needs to run execute()

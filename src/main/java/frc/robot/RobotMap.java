@@ -73,8 +73,8 @@ public class RobotMap {
   public static final double TalonPID_F = 0.0;
 
 
-  //arm
-  public static final double TalonArmMinOutput = -0.10;
+  //arm values
+  public static final double TalonArmMinOutput = -0.3;
   public static final double TalonArmMaxOutput = 0.3;
   public static final double TalonArmUpSpeed = .3;
   public static final double TalonArmUpPidDelta = 20; // match sign of upspeed
@@ -94,7 +94,7 @@ public class RobotMap {
   public static final double TalonArmCalibrateUpDist = 300;
   public static final double TalonArmCalibrateDownDist = -300;
 
-  //wrist
+  //wrist values
   public static final double TalonWristUpSpeed = 0.3;
   public static final double TalonWristUpPidDelta = 20; // match sign of upspeed
   public static final double TalonWristDownSpeed = -0.3;

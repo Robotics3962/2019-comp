@@ -78,7 +78,7 @@ public class PIDElevator extends PIDSubsystem {
   @Override
   public void initDefaultCommand() {
     if(useEncoders){
-      setDefaultCommand(new ElevatorHoldCmd());
+      //setDefaultCommand(new ElevatorHoldCmd());
     }
   }
 

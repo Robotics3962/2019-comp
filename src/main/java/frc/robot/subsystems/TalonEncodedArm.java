@@ -37,9 +37,9 @@ public class TalonEncodedArm extends Subsystem {
   private WPI_TalonSRX motor2;
   private double targetPosition;
   private double velocity;
-  private boolean encodersAreEnabled = true;
-  private boolean ArmlimitsAreEnabled = true; //used to be private
-  private boolean manualOverride = false;
+  private boolean encodersAreEnabled = false; // keep to false for manual control
+  private boolean ArmlimitsAreEnabled = true; 
+  private boolean manualOverride = true;
   private int count = 0;
   private int logMsgInterval = 50;
   private double prevPosition = 0;
@@ -135,10 +135,6 @@ public class TalonEncodedArm extends Subsystem {
     motor2.setNeutralMode(NeutralMode.Brake);
 
     Robot.Log("Arm Talon is initialized");
-  }
-
-  public void SetInitialization(boolean init){
-    isInitialization = init;
   }
 
   public void setPIDPosition(double pos) {
@@ -247,7 +243,8 @@ public class TalonEncodedArm extends Subsystem {
   
   public double getCurrentPosition() {
     if(!encodersAreEnabled){
-      Robot.die();
+      //Robot.die();
+      return -1.0;
     }
 
     double currpos = motor1.getSelectedSensorPosition(0);
@@ -262,7 +259,8 @@ public class TalonEncodedArm extends Subsystem {
 
   public void move(){
     if(!encodersAreEnabled){
-      Robot.die();
+      //Robot.die();
+      return;
     }
 
     // only move via PID when we are not manually controlling
@@ -285,6 +283,11 @@ public class TalonEncodedArm extends Subsystem {
   
   public void CheckForOverruns(){
     double newTargetPosition;
+
+    if(!encodersAreEnabled){
+      return;
+    }
+
     newTargetPosition = AdjustTargetPositionForLimits(targetPosition);
     if(newTargetPosition != targetPosition){
       targetPosition = newTargetPosition;
@@ -294,6 +297,10 @@ public class TalonEncodedArm extends Subsystem {
 
   private double AdjustTargetPositionForLimits(double target){
       double adjustedPos = target;
+
+      if(!encodersAreEnabled){
+        return -1;
+      }
 
       // if we have reached the limits, then make sure
       // we don't move past them, so set the position we
@@ -313,6 +320,11 @@ public class TalonEncodedArm extends Subsystem {
   }
 
   private void CleanUpPositionsAndLimits(Direction dir){
+
+    if(!encodersAreEnabled){
+      return;
+    }
+
     double adjustedPos;
     double currPos = getCurrentPosition();
     switch(dir){
@@ -333,7 +345,8 @@ public class TalonEncodedArm extends Subsystem {
   
   public boolean onTarget(){
     if(!encodersAreEnabled){
-      Robot.die();
+      return false;
+      //Robot.die();
     }
     
     boolean reachedTarget = false;
@@ -360,11 +373,6 @@ public class TalonEncodedArm extends Subsystem {
       atLimit = topLimit.get();
     }
 
-    if(atLimit & (targetPosition > getCurrentPosition())){
-      Robot.Log("at upper limit adjust from " + targetPosition + " to " + getCurrentPosition());
-      targetPosition = getCurrentPosition();
-    }
-
     return atLimit;
   }
 
@@ -374,11 +382,6 @@ public class TalonEncodedArm extends Subsystem {
       atLimit = bottomLimit.get();
     }
     
-    if(atLimit && (targetPosition < getCurrentPosition())){
-      Robot.Log("at lower limit adjust from " + targetPosition + " to " + getCurrentPosition());
-      targetPosition = getCurrentPosition();
-    }
-
     return atLimit;
   }
 
@@ -427,12 +430,13 @@ public class TalonEncodedArm extends Subsystem {
 
   public void setTalonSpeed(double val){
 
-    targetPosition = getCurrentPosition();
+    if(encodersAreEnabled){
+      targetPosition = getCurrentPosition();
+    }
     
     // this command is used to manually move the
     // motor so set the variable that stops the PID
     // from overriding
-    Robot.die(); 
     manualOverride = true;
     velocity = val;
     motor1.set(ControlMode.PercentOutput, velocity);
@@ -440,7 +444,9 @@ public class TalonEncodedArm extends Subsystem {
 
   public void Up(){
     // stop the pid loop from moving the motor
-    targetPosition = getCurrentPosition();
+    if(encodersAreEnabled){
+      targetPosition = getCurrentPosition();
+    }
 
     LogInfo(true);  
     if (atUpperLimit()){
@@ -456,7 +462,10 @@ public class TalonEncodedArm extends Subsystem {
 
   public void Down(){
     // stop the pid loop from moving the motor
-    targetPosition = getCurrentPosition();
+    if(encodersAreEnabled){
+      targetPosition = getCurrentPosition();
+    }
+
     LogInfo(true);  
     if (atLowerLimit()){
       Stop();

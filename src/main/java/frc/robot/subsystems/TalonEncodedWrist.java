@@ -283,7 +283,7 @@ public class TalonEncodedWrist extends Subsystem {
   @Override
   public void initDefaultCommand() {
     if(encodersAreEnabled){
-      setDefaultCommand(new WristHoldCmd());
+      //setDefaultCommand(new WristHoldCmd());
     }
   }
 

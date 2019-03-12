@@ -64,66 +64,24 @@ public class OI {
     JoystickButton driveButtonStart = new JoystickButton(driveJoystick, RobotMap.JoystickButtonStart);
 
     // map buttons to commands on the joystick that drives the robot
-    boolean useDriveStickForEverything = false;
-    if(useDriveStickForEverything){
-      driveButtonA.whileHeld(new ArmDownCmd());
-      driveButtonB.whileHeld(new ArmUpCmd());
-      driveButtonX.whileHeld(new WristDownCmd());
-      driveButtonY.whileHeld(new WristUpCmd());
-      driveButtonLS.whileHeld(new ShootBallCmd());
-      driveButtonRS.whileHeld(new GrabBallCmd());
-      driveButtonBack.whenPressed(new ResetArmEncoderCmd());
-      driveButtonStart.whenPressed(new CalibrateCmd());
+    driveButtonA.whileHeld(new ArmDownCmd());
+    driveButtonB.whileHeld(new ArmUpCmd());
+    driveButtonX.whileHeld(new WristDownCmd());
+    driveButtonY.whileHeld(new WristUpCmd());
+    driveButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
+    driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
+    driveButtonBack.whenPressed(new GrabBallCmd());
+    driveButtonStart.whenPressed(new ShootBallCmd());
 
-      //driveButtonLS.whenPressed(new ElevatorDownCmd());
-      //driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
-    }
-    else{
-      driveButtonA.whenPressed(new MoveToGrabPositionCmd());
-      driveButtonB.whenPressed(new MoveToShootLowPositionCmd());
-      driveButtonX.whenPressed(new MoveToShootMiddlePositionCmd());
-      driveButtonY.whenPressed(new MoveToShootHighPositionCmd());
-      driveButtonBack.whenPressed(new MoveToStowPositionCmd());
-      driveButtonStart.whenPressed(new CalibrateCmd());
-      //driveButtonLS.whileHeld(new ShootBallCmd());
-      driveButtonRS.whileHeld(new GrabBallCmd());
-      driveButtonLS.whenPressed(new ResetArmEncoderCmd());
-    }
-
-    if(false){
-      // get the buttons on the operational joystick
-      JoystickButton opButtonA = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonA);
-      JoystickButton opButtonB = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonB);
-      JoystickButton opButtonX = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonX);
-      JoystickButton opButtonY = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonY);
-      JoystickButton opButtonLS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderLeft);
-      JoystickButton opButtonRS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderRight);
-      JoystickButton opButtonBack = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonBack);
-      JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
-
-      // map buttons to commands on the has manual adjustments
-        opButtonA.whileHeld(new PIDArmDownCmd());
-        opButtonB.whileHeld(new PIDArmUpCmd());
-
-        opButtonX.whileHeld(new PIDWristDownCmd());
-        opButtonY.whileHeld(new PIDWristUpCmd());
-        opButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.PID));
-        opButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.PID));
-
-        // this will run the calibration, it assumes the
-        // arm,wrist,and arm are at there powered off positions
-        opButtonStart.whenPressed(new CalibrateCmd());
-
-        // this should be used only under extreme duress.
-        // will zero the positions of the elevator,arm, and wrist
-        // where they currently are. If the encoders get really out
-        // of sync, hit this button, then use A|B|X|Y|LS|RS to move
-        // the components to the positions they were originally zeroed
-        // at them hit this button so the movetoposition buttons
-        // above will move to the correct positions
-        opButtonBack.whenPressed(new ResetAllEncoders());
-    }
-
+    // second joystick I'm calling it operational - no command mapping yet
+    JoystickButton opButtonA = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonA);
+    JoystickButton opButtonB = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonB);
+    JoystickButton opButtonX = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonX);
+    JoystickButton opButtonY = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonY);
+    JoystickButton opButtonLS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderLeft);
+    JoystickButton opButtonRS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderRight);
+    JoystickButton opButtonBack = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonBack);
+    JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
   }
 
   // these next two functions are legacy functions that get joystick values

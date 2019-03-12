@@ -13,7 +13,7 @@ import frc.robot.RobotMap;
 
 public class ElevatorDownCmd extends Command {
   public enum Mode{ PID, SPEED };
-  private Mode mode;
+  private Mode mode = Mode.SPEED;
 
   public ElevatorDownCmd(Mode controlMode) {
     requires (Robot.pidElevator);
