@@ -74,6 +74,7 @@ public class RobotMap {
 
 
   //arm values
+  public static final double ArmScaledSpeedFactor = 0.3;
   public static final double TalonArmMinOutput = -0.3;
   public static final double TalonArmMaxOutput = 0.3;
   public static final double TalonArmUpSpeed = .3;
@@ -95,6 +96,7 @@ public class RobotMap {
   public static final double TalonArmCalibrateDownDist = -300;
 
   //wrist values
+  public static final double WristScaledSpeedFactor = 0.3;
   public static final double TalonWristUpSpeed = 0.3;
   public static final double TalonWristUpPidDelta = 20; // match sign of upspeed
   public static final double TalonWristDownSpeed = -0.3;

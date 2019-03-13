@@ -9,33 +9,9 @@ package frc.robot;
 
 import frc.robot.commands.ElevatorUpCmd;
 import frc.robot.commands.ElevatorDownCmd;
-import frc.robot.commands.MoveToGrabPositionCmd;
-import frc.robot.commands.TalonArmPIDMove;
-import frc.robot.commands.TalonWristPIDMove;
-import frc.robot.commands.ElevatorDownCmd.Mode;
 import frc.robot.subsystems.PIDElevator;
-import frc.robot.commands.ResetArmEncoderCmd;
-import frc.robot.commands.ResetWristEncoderCmd;
-import frc.robot.commands.ResetElevatorEncoderCmd;
 import frc.robot.commands.ShootBallCmd;
 import frc.robot.commands.GrabBallCmd;
-import frc.robot.commands.MoveToCarryPositionCmd;
-import frc.robot.commands.MoveToGrabPositionCmd;
-import frc.robot.commands.MoveToShootHighPositionCmd;
-import frc.robot.commands.MoveToShootLowPositionCmd;
-import frc.robot.commands.MoveToShootMiddlePositionCmd;
-import frc.robot.commands.MoveToStowPositionCmd;
-import frc.robot.commands.PIDArmDownCmd;
-import frc.robot.commands.PIDWristDownCmd;
-import frc.robot.commands.PIDArmUpCmd;
-import frc.robot.commands.PIDWristUpCmd;
-import frc.robot.commands.ResetAllEncoders;
-import frc.robot.commands.ResetArmEncoderCmd;
-import frc.robot.commands.CalibrateCmd;
-import frc.robot.commands.ArmDownCmd;
-import frc.robot.commands.ArmUpCmd;
-import frc.robot.commands.WristUpCmd;
-import frc.robot.commands.WristDownCmd;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -64,14 +40,12 @@ public class OI {
     JoystickButton driveButtonStart = new JoystickButton(driveJoystick, RobotMap.JoystickButtonStart);
 
     // map buttons to commands on the joystick that drives the robot
-    driveButtonA.whileHeld(new ArmDownCmd());
-    driveButtonB.whileHeld(new ArmUpCmd());
-    driveButtonX.whileHeld(new WristDownCmd());
-    driveButtonY.whileHeld(new WristUpCmd());
-    driveButtonLS.whileHeld(new ElevatorDownCmd(ElevatorDownCmd.Mode.SPEED));
-    driveButtonRS.whileHeld(new ElevatorUpCmd(ElevatorUpCmd.Mode.SPEED));
-    driveButtonBack.whenPressed(new GrabBallCmd());
-    driveButtonStart.whenPressed(new ShootBallCmd());
+    //driveButtonA.whileHeld(new ArmDownCmd());
+    //driveButtonB.whileHeld(new ArmUpCmd());
+    //driveButtonX.whileHeld(new WristDownCmd());
+    //driveButtonY.whileHeld(new WristUpCmd());
+    //driveButtonLS.whileHeld(new ElevatorDownCmd());
+    //driveButtonRS.whileHeld(new ElevatorUpCmd());
 
     // second joystick I'm calling it operational - no command mapping yet
     JoystickButton opButtonA = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonA);
@@ -82,23 +56,21 @@ public class OI {
     JoystickButton opButtonRS = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonShoulderRight);
     JoystickButton opButtonBack = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonBack);
     JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
+
+    opButtonLS.whileHeld(new ElevatorDownCmd());
+    opButtonRS.whileHeld(new ElevatorUpCmd());
+    opButtonBack.whileHeld(new GrabBallCmd());
+    opButtonStart.whileHeld(new ShootBallCmd());
   }
 
-  // these next two functions are legacy functions that get joystick values
-
-  public double getLeftJoystickXVal() {
-    double raw = driveJoystick.getX();
-    return Math.abs(raw) < RobotMap.JoystickDeadZone ? 0.0 : raw;
+  public double getOperWristControl(){
+    return operationJoyStick.getY();
   }
 
-  public double getLeftJoystickYVal() {
-    double raw = driveJoystick.getY();
-    return Math.abs(raw) < RobotMap.JoystickDeadZone ? 0.0 : raw;
-  }    
-
-  // these next two function will allow one joystick to control
-  // the thottle, and the other to control the rotation.
-  // =========> it is untested <==============
+  public double getOperArmControl(){
+    return operationJoyStick.getRawAxis(5); // not sure this is right number
+  }
+  
   public double getLeftThrottle() {
 		return driveJoystick.getY(); // Laika needs negative, Belka is positive
 	}	

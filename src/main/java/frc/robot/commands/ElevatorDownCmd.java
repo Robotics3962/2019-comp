@@ -12,12 +12,9 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class ElevatorDownCmd extends Command {
-  public enum Mode{ PID, SPEED };
-  private Mode mode = Mode.SPEED;
 
-  public ElevatorDownCmd(Mode controlMode) {
+  public ElevatorDownCmd() {
     requires (Robot.pidElevator);
-    mode = controlMode;
   }
 
   // Called just before this Command runs the first time
@@ -28,15 +25,7 @@ public class ElevatorDownCmd extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    switch(mode){
-      case PID:
-        double newPos = Robot.pidElevator.getTargetPosition() + RobotMap.ElevatorDownPidDelta;
-        Robot.pidElevator.setPIDPosition(newPos);
-      break;
-      case SPEED:
-        Robot.pidElevator.Down();
-      break;
-    }
+    Robot.pidElevator.Down();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -48,9 +37,7 @@ public class ElevatorDownCmd extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    if(mode == Mode.SPEED){
-      Robot.pidElevator.Stop();
-    }
+    Robot.pidElevator.Stop();
   }
 
   // Called when another command which requires one or more of the same
