@@ -58,33 +58,23 @@ public class RobotMap {
   public static final double TalonMinOutput = -0.25;
   public static final double TalonMaxOutput = 0.3;
 
-  /// generic
-  public static final double TalonUpSpeed = -.2;
-  public static final double TalonUpPidDelta = -20; // match sign of upspeed
-  public static final double TalonDownSpeed = .3;
-  public static final double TalonDownPidDelta = 20; // match sign of down speed
-  public static final double TalonStopSpeed = .001;
-  public static final double TalonAbsTolerance = 5;
-  public static final int    TalonCruiseSpeed = 15000;
-  public static final int    TalonAcceleration = 6000;
-  public static final double TalonPID_P = 4; //0.2;
-  public static final double TalonPID_I = 0.0;
-  public static final double TalonPID_D = 0.0;
-  public static final double TalonPID_F = 0.0;
-
 
   //arm values
   public static final double ArmScaledSpeedFactor = 0.3;
+
   public static final double TalonArmMinOutput = -0.3;
   public static final double TalonArmMaxOutput = 0.3;
+
   public static final double TalonArmUpSpeed = .3;
   public static final double TalonArmUpPidDelta = 20; // match sign of upspeed
   public static final double TalonArmDownSpeed = -.2;
   public static final double TalonArmDownPidDelta = -20; // match sign of down speed
+
   public static final double TalonSrmStopSpeed = .001;
   public static final double TalonArmAbsTolerance = 2.5;
   public static final int    TalonArmCruiseSpeed = 15000;
   public static final int    TalonArmAcceleration = 6000;
+
   public static final double TalonArmInitPIDUp_P = 1.28; //0.2;
   public static final double TalonArmInitPIDDown_P = 1.28; //0.2;
   public static final double TalonArmMovePIDUp_P = 18; //0.2;
@@ -98,38 +88,27 @@ public class RobotMap {
   //wrist values
   public static final double WristScaledSpeedFactor = 0.3;
   public static final double TalonWristUpSpeed = 0.3;
-  public static final double TalonWristUpPidDelta = 20; // match sign of upspeed
   public static final double TalonWristDownSpeed = -0.3;
-  public static final double TalonWristDownPidDelta = -20; // match sign of down speed
-  public static final double TalonWristStopSpeed = .001;
-  public static final double TalonWristAbsTolerance = 5;
-  public static final int    TalonWristCruiseSpeed = 15000;
-  public static final int    TalonWristAcceleration = 6000;
-  public static final double TalonWristPID_P = 4; //0.2;
-  public static final double TalonWristPID_I = 0.0;
-  public static final double TalonWristPID_D = 0.0;
-  public static final double TalonWristPID_F = 0.0;
-  public static final double TalonWristCalibrateUpDist = -100;
-  public static final double TalonWristCalibrateDownDist = 1000;
+  
 
   // elevator values
   public static final int SparkElevatorId = 5;
   public static final double ElevatorUpSpeed = 0.4;
-  public static final double ElevatorUpPidDelta = 0.5; // match sign of up speed
+  //public static final double ElevatorUpPidDelta = 0.5; // match sign of up speed
   public static final double ElevatorDownSpeed = -0.4;
-  public static final double ElevatorDownPidDelta = -0.5; // match sign of down speed
+ // public static final double ElevatorDownPidDelta = -0.5; // match sign of down speed
   public static final double ElevatorStopSpeed = .001;
   public static final double ElevatorPID_P = 0.001;
   public static final double ElevatorPID_I = 0.0;
   public static final double ElevatorPID_D = 0.0;
   public static final double ElevatorPID_F = 0.0;
-  public static final double ElevatorDistPerPulse = 1;
-  public static final boolean ElevatorReverseDirection = false;
+  //public static final double ElevatorDistPerPulse = 1;
+  //public static final boolean ElevatorReverseDirection = false;
   public static final double ElevatorMinOutput = -.5;
   public static final double ElevatorMaxOutput = .5;
-  public static final double ElevatorAbsTolerance = 5;
-  public static final double ElevatorCalibrateUpDist = 5;
-  public static final double ElevatorCalibrateDownDist = -50;
+  //public static final double ElevatorAbsTolerance = 5;
+ // public static final double ElevatorCalibrateUpDist = 5;
+ // public static final double ElevatorCalibrateDownDist = -50;
 
   // intake values
   public static final int SparkIntakeId = 4;
@@ -166,6 +145,7 @@ public class RobotMap {
   // this is used to make the encoder phase check less sensitive
   public static final double EncoderSlop = 20;//used to be 2
 
+  
   // position of elevator,arm and wrist to grab a ball
   public static final int    GrabBallPosIndex = 0;
   public static final double GrabBallElevatorPos = 10;
