@@ -9,12 +9,15 @@ package frc.robot;
 
 import frc.robot.commands.ElevatorUpCmd;
 import frc.robot.commands.ElevatorDownCmd;
-import frc.robot.subsystems.PIDElevator;
 import frc.robot.commands.ShootBallCmd;
 import frc.robot.commands.GrabBallCmd;
+import frc.robot.commands.LockWristCmd;
+import frc.robot.commands.UnlockWristCmd;
+import frc.robot.commands.WristLockPosDownCmd;
+import frc.robot.commands.WristLockPosUpCmd;
+import frc.robot.commands.DumpInfoCmd;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
@@ -40,12 +43,10 @@ public class OI {
     JoystickButton driveButtonStart = new JoystickButton(driveJoystick, RobotMap.JoystickButtonStart);
 
     // map buttons to commands on the joystick that drives the robot
-    //driveButtonA.whileHeld(new ArmDownCmd());
-    //driveButtonB.whileHeld(new ArmUpCmd());
-    //driveButtonX.whileHeld(new WristDownCmd());
-    //driveButtonY.whileHeld(new WristUpCmd());
-    //driveButtonLS.whileHeld(new ElevatorDownCmd());
-    //driveButtonRS.whileHeld(new ElevatorUpCmd());
+    driveButtonA.whileHeld(new DumpInfoCmd());
+    driveButtonBack.whileHeld(new GrabBallCmd());
+    driveButtonStart.whileHeld(new ShootBallCmd());
+
 
     // second joystick I'm calling it operational - no command mapping yet
     JoystickButton opButtonA = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonA);
@@ -57,10 +58,14 @@ public class OI {
     JoystickButton opButtonBack = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonBack);
     JoystickButton opButtonStart = new JoystickButton(operationJoyStick, RobotMap.JoystickButtonStart);
 
-    opButtonLS.whileHeld(new ElevatorDownCmd());
+    // the left thumb stick controls the wrist
+    // the right thumb stick control the arm
+    opButtonA.whenPressed(new LockWristCmd());
+    opButtonB.whenPressed(new UnlockWristCmd());
+    opButtonX.whenPressed(new WristLockPosDownCmd());
+    opButtonY.whenPressed(new WristLockPosUpCmd());
     opButtonRS.whileHeld(new ElevatorUpCmd());
-    opButtonBack.whileHeld(new GrabBallCmd());
-    opButtonStart.whileHeld(new ShootBallCmd());
+    opButtonLS.whileHeld(new ElevatorDownCmd());
   }
 
   public double getOperWristControl(){
