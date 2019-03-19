@@ -73,8 +73,9 @@ public class RobotMap {
   public static final double TalonPID_F = 0.0;
 
 
-  //arm
-  public static final double TalonArmMinOutput = -0.10;
+  //arm values
+  public static final double ArmScaledSpeedFactor = 0.3;
+  public static final double TalonArmMinOutput = -0.3;
   public static final double TalonArmMaxOutput = 0.3;
   public static final double TalonArmUpSpeed = .3;
   public static final double TalonArmUpPidDelta = 20; // match sign of upspeed
@@ -84,15 +85,18 @@ public class RobotMap {
   public static final double TalonArmAbsTolerance = 2.5;
   public static final int    TalonArmCruiseSpeed = 15000;
   public static final int    TalonArmAcceleration = 6000;
-  public static final double TalonArmPID_P = 1.28; //0.2;
-  public static final double TalonArmPIDDown_P = 1.28; //0.2;
+  public static final double TalonArmInitPIDUp_P = 1.28; //0.2;
+  public static final double TalonArmInitPIDDown_P = 1.28; //0.2;
+  public static final double TalonArmMovePIDUp_P = 18; //0.2;
+  public static final double TalonArmMovePIDDown_P = 18 ; //0.2;
   public static final double TalonArmPID_I = 0.0; //be careful when chnaging, speed increases by a ridiculous amount
   public static final double TalonArmPID_D = 0.0;
-  public static final double TalonArmPID_F = 0.02;
+  public static final double TalonArmPID_F = 2.0;
   public static final double TalonArmCalibrateUpDist = 300;
   public static final double TalonArmCalibrateDownDist = -300;
 
-  //wrist
+  //wrist values
+  public static final double WristScaledSpeedFactor = 0.3;
   public static final double TalonWristUpSpeed = 0.3;
   public static final double TalonWristUpPidDelta = 20; // match sign of upspeed
   public static final double TalonWristDownSpeed = -0.3;
@@ -189,7 +193,7 @@ public class RobotMap {
   // position of elevator,arm to put in high hole
   public static final int    HighBallPosIndex = 4;
   public static final double HighBallElevatorPos = 30;
-  public static final double HighBallArmPos = 125;
+  public static final double HighBallArmPos = 150;
   public static final double HighBallWristPos = 200;
 
   // position of elevator,arm carry ball

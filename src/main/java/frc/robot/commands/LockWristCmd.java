@@ -10,20 +10,22 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class ArmUpCmd extends Command {
-  public ArmUpCmd() {
-    requires(Robot.encodedArmTalon);
+public class LockWristCmd extends Command {
+  public LockWristCmd() {
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
+    requires(Robot.encodedWristTalon);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.encodedWristTalon.LockPosition();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.encodedArmTalon.Up();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -35,7 +37,6 @@ public class ArmUpCmd extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.encodedArmTalon.Stop();
   }
 
   // Called when another command which requires one or more of the same

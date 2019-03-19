@@ -10,20 +10,20 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class ElevatorHoldCmd extends Command {
-  public ElevatorHoldCmd() {
-    requires(Robot.pidElevator);
+public class WristLockPosUpCmd extends Command {
+  public WristLockPosUpCmd() {
+    requires(Robot.encodedWristTalon);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.encodedWristTalon.MoveTargetPositionUp();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.pidElevator.holdPosition();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -41,5 +41,6 @@ public class ElevatorHoldCmd extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    end();
   }
 }

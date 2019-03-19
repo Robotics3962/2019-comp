@@ -11,50 +11,36 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 import frc.robot.Robot.Direction;
 import frc.robot.Robot;
-import frc.robot.commands.WristHoldCmd;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX; 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
-import java.lang.Math;
 
 /**
  * Add your docs here.
  */
 public class TalonEncodedWrist extends Subsystem {
+
+  private enum Mode { NONE, SPEED, PID };
+
   // Put methods for controlling this subsystem
   // here. Call these from Commands. 
   private static final int ENCODER_SLOT_INDEX = 0;
   private static final int PRIMARY_ENCODER_IDX = 0;
   private static final int ENCODER_RESET_POSTION = 0;
-  private static final int ENCODER_RESET_TIMEOUT = 0;
   private static final int ENCODER_CONFIG_TIMEOUT = 10;
   private static final int TALONRSX_TIMEOUT = 10;
+  private static final int PID_TARGET_ADJUST_STEPS = 2;
 
   private WPI_TalonSRX motor1;
   private WPI_TalonSRX motor2;
 
-  private double targetPosition;
   private double velocity;
-  private boolean encodersAreEnabled = false;
-  private boolean limitSwAreEnabled = false;
-  private boolean manualOverride = true;
   private int count = 0;
   private int logMsgInterval = 5; // log message every N times log is called
-
-  // set to false to use position, set to true to
-  // use motion magic.  girls of steel uses motion magic for
-  // what looks to be an elevator, but not for what looks
-  // like a rotation
-  private boolean useMotionMagic = false;
 
   //Limit switches;
   private DigitalInput topLimit = null; //new DigitalInput(RobotMap.LimitSwitchPIOId2);
@@ -62,22 +48,54 @@ public class TalonEncodedWrist extends Subsystem {
 
   // holds variables used to determine out of phase encoders
   private Robot.Direction dirMoved = Robot.Direction.NONE; 
-  private double pastPosition = 0.0;
 
+  // used for locking the position of the wrist
+  private double targetPosition = 0;
+  private double newTargetPosition = 0;
+  private Mode mode = Mode.SPEED;
+  private boolean useEncoder = true;
+
+  // set to true if limit switches set wired
+  private boolean useLimitSw = false;
+
+  /**
+   * This is the subsystem the controls the wrist. 
+   * 
+   * It has optional support for limit switches.  If limit
+   * switches are present, set useLimitSw to true.  
+   * 
+   * It has optional support for an encoder.  If an encoder
+   * is present set useEncoder to true.
+   * 
+   * Its primary responsibility is to allow manual control of the wrist.
+   * A thumbstick on the game pad is used to set the speed in
+   * a positive or negative direction.  Postitive rotates the
+   * wrist up, negative rotates the wrist down.  
+   * 
+   * The speed the wrist moves is dependent on how far the joystick
+   * is moved.  The entire movement of the joystick is scaled to 
+   * constants set in RobotMap.java.  This allows finer control and
+   * stops the wrist from moving too fast.
+   * 
+   * If an encode is present, the wrist can be locked into its current
+   * postion by calling LockWristPosition().  This uses the pid 
+   * controller to keep the wrist at the current position. 
+   * 
+   * The locked position can be moved up and down for fine adjustments.
+   */
   public TalonEncodedWrist() {
-    encodersAreEnabled = true;
-    limitSwAreEnabled = false;
-
-    targetPosition = 0;
     velocity = 0;
 
-    // assume that motor1 is connected to encoder
-    
     motor1 = new WPI_TalonSRX(RobotMap.TalonMotorCanID3);
     motor2 = new WPI_TalonSRX(RobotMap.TalonMotorCanID4);
 
     motor1.configFactoryDefault();
     motor2.configFactoryDefault();
+  
+    // http://www.ctr-electronics.com/downloads/api/java/html/enumcom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_neutral_mode.html#a3128d32cfbfab8d5e40ed6907d14e621
+    //When commanded to neutral, motor leads are commonized electrically to reduce motion. 
+    motor1.setNeutralMode(NeutralMode.Brake);
+    motor2.setNeutralMode(NeutralMode.Brake);
 
     // only 1 controller (motor1) is wired to the encoder, so we have motor2
     // follow motor1 to keep it moving at the same speed
@@ -94,47 +112,29 @@ public class TalonEncodedWrist extends Subsystem {
     motor1.setInverted(true);
     motor2.setInverted(true);
 
-    if(limitSwAreEnabled){
+    if(useLimitSw){
       topLimit = new DigitalInput(RobotMap.WristTopLimitSwitchId);
       bottomLimit = new DigitalInput(RobotMap.WristBottomLimitSwitchId);
     }
-
-    if (encodersAreEnabled) {
+    if (useEncoder) {
       // init code pulled from https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java/MotionMagic/src/main/java/frc/robot/Robot.java
 
       /* Configure Sensor Source for Pirmary PID */
-      /* I don't see where GOS sets this. Could it be set to something else */
+      /* GOS does not call this function, I guess they take the default */
+      /* they could be using the absolute location mode */
       motor1.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,	
           PRIMARY_ENCODER_IDX, 
           ENCODER_CONFIG_TIMEOUT);
 
-      motor1.setSensorPhase(false);//changed from false to true
+      motor1.setSensorPhase(true);
 
-      motor1.setNeutralMode(NeutralMode.Brake);
-      motor2.setNeutralMode(NeutralMode.Brake);
-  
-      /* Set relevant frame periods to be at least as fast as periodic rate */
-      /* DJD I don't know what this does                                    */
-      /* girls of steel doesn't do this                                     */
-      // I don't think we want to set this, it has to do with how often position is updated,
-		  //motor1.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, ENCODER_CONFIG_TIMEOUT);
-		  //motor1.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, ENCODER_CONFIG_TIMEOUT);
-
-      /* Set Motion Magic gains in slot0 - see documentation */
       motor1.selectProfileSlot(ENCODER_SLOT_INDEX, PRIMARY_ENCODER_IDX);
 
-      //change these parameters
-      motor1.config_kF(PRIMARY_ENCODER_IDX, RobotMap.TalonWristPID_F, ENCODER_CONFIG_TIMEOUT);
-      motor1.config_kP(PRIMARY_ENCODER_IDX, RobotMap.TalonWristPID_P, ENCODER_CONFIG_TIMEOUT);
-      motor1.config_kI(PRIMARY_ENCODER_IDX, RobotMap.TalonWristPID_I, ENCODER_CONFIG_TIMEOUT);
-      motor1.config_kD(PRIMARY_ENCODER_IDX, RobotMap.TalonWristPID_D, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kF(0, RobotMap.TalonArmPID_F, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kP(0, RobotMap.TalonArmInitPIDUp_P, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kI(0, RobotMap.TalonArmPID_I, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kD(0, RobotMap.TalonArmPID_D, ENCODER_CONFIG_TIMEOUT);
   
-      if(useMotionMagic){
-        /* Set acceleration and vcruise velocity - see documentation */
-		    motor1.configMotionCruiseVelocity(RobotMap.TalonWristCruiseSpeed, ENCODER_CONFIG_TIMEOUT);
-		    motor1.configMotionAcceleration(RobotMap.TalonWristAcceleration, ENCODER_CONFIG_TIMEOUT);
-      }
-
 		  /* Zero the sensor */
       motor1.setSelectedSensorPosition(PRIMARY_ENCODER_IDX, ENCODER_RESET_POSTION, ENCODER_CONFIG_TIMEOUT);
     }
@@ -142,266 +142,181 @@ public class TalonEncodedWrist extends Subsystem {
     Robot.Log("wrist is initialized");
   }
 
-  public void setPIDPosition(double pos) {
-    if(!encodersAreEnabled){
-      return;
-    }
-
-    // this is an automated call so turn off manual control
-    // also turn off sensor phase checking
-    manualOverride = false;
-    dirMoved = Direction.NONE;
-
-    Robot.Log("wrist setPidPosition:" + pos);
-    targetPosition = pos;
-
-    // don't need to move the wrist as the background command
-    // will take care of that
-  }
-
+  // this stops the motor from moving. With the default neutral
+  // position set to brake, it should stop it from moving.
   public void stop() {
     //motor1.neutralOutput();
     motor1.stopMotor();
   }
 
-  public boolean resetEncoder(){
-    if(!encodersAreEnabled){
-      return true;
-      //Robot.die();
-    }
-
-    stop();
-
-    // there is no guarantee the position will be 0 when this call returns.
-    // because it is done asynchronously. Have a command call encoderResetComplete()
-    // until it returns true 
-    motor1.setSelectedSensorPosition(PRIMARY_ENCODER_IDX, ENCODER_RESET_POSTION, ENCODER_RESET_TIMEOUT);
-
-    // set the target position to 0 so we don't move the arm to some
-    // out of bounds place
-    targetPosition  = 0;
-
-    Robot.Log("wrist talon encoders reset");
-    return true;
-  }
-
-  public boolean encoderResetComplete(){
-    if(!encodersAreEnabled){
-      Robot.die();
-    }
-
-    boolean complete = false;
-    // it may never get to 0, if the motor is moving at all
-    // the encoder would return non-zero, we may have to check
-    // a range
-    if (getCurrentPosition() == 0){
-      complete = true;
-      Robot.Log("wrist Talon encoder is complete");
-    }
-    return complete;
-  }
-
-  public double getTargetPosition(){
-    return targetPosition;
-  }
-
-  public double getCurrentPosition() {
-    if(!encodersAreEnabled){
-      Robot.die();
-    }
-
-    double currpos = motor1.getSelectedSensorPosition(0);
-    return currpos;
-  }
-
-  public void holdPosition(){
-    if(encodersAreEnabled){
-      move();
-    }
-  }
-
-  public void move(){
-    if(!encodersAreEnabled){
-      Robot.die();
-    }
-
-    // do not set the pid if manual override is enabled
-    if(!manualOverride){
-      // if we have reached the limits, then make sure
-      // we don't move past them, so set the position we
-      // want to move to to the current position
-      // so we stop moving
-      if(atLowerLimit() || atUpperLimit()){
-        targetPosition = getCurrentPosition();
-      }
-
-      if(useMotionMagic){
-        motor1.set(ControlMode.MotionMagic, targetPosition);
-      }
-      else {
-        motor1.set(ControlMode.Position, targetPosition);
-      }
-      LogInfo(true);
-    }
-  }
-
-  public boolean onTarget(){
-    if(!encodersAreEnabled){
-      Robot.die();
-    }
-    
-    boolean reachedTarget = false;
-    boolean belowRange = true;
-    boolean aboveRange = true;
-    double curpos = getCurrentPosition();
-
-    belowRange = curpos < (targetPosition - RobotMap.TalonWristAbsTolerance);
-    aboveRange = curpos > (targetPosition + RobotMap.TalonWristAbsTolerance);
-
-    reachedTarget = ((!belowRange) && (!aboveRange));
-    return reachedTarget;
-  }
-
+  /**
+   * This function returns if the upper limit switch is
+   * engaged. 
+   * 
+   * @return true: if the upper limit switch is activated
+   * if limit switches are not configured, false is always returned
+   */
   public boolean atUpperLimit(){
     boolean atLimit = false;
-    if(limitSwAreEnabled){
+    if(useLimitSw){
       atLimit = topLimit.get();
     }
-
     return atLimit;
   }
 
+  /**
+   * This function returns if the lower limit switch is
+   * engaged. 
+   * 
+   * @return true: if the lower limit switch is activated
+   * if limit switches are not configured, false is always returned
+   */
   public boolean atLowerLimit() {
     boolean atLimit = false;
-    if(limitSwAreEnabled){
+    if(useLimitSw){
       atLimit = bottomLimit.get();
     }
-    
     return atLimit;
   }
 
   @Override
   public void initDefaultCommand() {
-    if(encodersAreEnabled){
-      setDefaultCommand(new WristHoldCmd());
+  }
+
+  /**
+   * gets the current position of the encoder
+   * 
+   * @return a double with the current encoder position
+   * if no encoder is configured, it returns 0.0
+   */
+  private double getCurrentPosition(){
+    double pos = 0.0;
+    if(useEncoder){
+      pos = motor1.getSelectedSensorPosition(0);
+    }
+    return pos;
+  }
+
+  /**
+   * tells the subsystem to use the pid controller to
+   * keep the wrist locked at its current position
+   */
+  public void LockPosition(){
+    if(useEncoder){
+      mode = Mode.PID;
+      newTargetPosition = getCurrentPosition();
     }
   }
 
-  // make sure the motor and encoder are in phase.  This means that
-  // when we move the motor with a negative speed, the encoder
-  // show we moved in the negative direction and vice versa
-  private void VerifyEncoderPhase(double prevPos){
+  /**
+   * tells teh subsystem to no longer keep the 
+   * wrist locked at its position and the wrist can
+   * now be moved by using the thumbstick to change the speed.
+   */
+  public void UnlockPosition(){
+    mode = Mode.SPEED;
+  }
 
-    if(encodersAreEnabled){
-      double pos = getCurrentPosition();
-      double deltaPos = pos - prevPos;
-      double sign = 0;
-      boolean check = true;
-
-      // don't do this check when running PID
-      // as prev and curr position are not set
-      // correctly and could flag a false positive
-      // or a false negative
-      if(!manualOverride){
-        return;
-      }
-
-      switch(dirMoved){
-        case DOWN:
-          sign = Math.copySign(1, RobotMap.TalonWristDownSpeed);
-          break;
-        case UP:
-          sign = Math.copySign(1, RobotMap.TalonWristUpSpeed);
-          break;
-        case NONE://also is referred to if using PID move
-          check = false;
-        break;
-      }
-      
-      if( check && (Math.abs(deltaPos) > RobotMap.EncoderSlop) ){
-        double deltaPosSign = Math.copySign(1, deltaPos);
-        if( deltaPosSign != sign){
-          Robot.Log("Wrist encoder is out of Phase from Wrist Motor dir:" + dirMoved + " deltapos:" + deltaPos);
-          Robot.die();
-        }
-      }
-      pastPosition = getCurrentPosition();
+  /**
+   * adjustes the target position the wrist is locked at
+   * in the upward direction by a fixed amount
+   */
+  public void MoveTargetPositionUp(){
+    dirMoved = Robot.Direction.UP;
+    if(!atUpperLimit() && useEncoder){
+      newTargetPosition += PID_TARGET_ADJUST_STEPS;
     }
-    return;
+  }
+
+  /**
+   * adjustes the target position the wrist is locked at
+   * in the downward direction by a fixed amount
+   */
+  public void MoveTargetPositionDown(){
+    dirMoved = Robot.Direction.DOWN;
+    if(!atLowerLimit() && useEncoder){
+      newTargetPosition -= PID_TARGET_ADJUST_STEPS;
+    }
   }
 
   // the rest of these commands are for manual movement
 
+  /**
+   * set the speed to move the motors at
+   * @param val
+   * this is the speed to move the motor, it will be
+   * between -1 and +1
+   */
   public void setTalonSpeed(double val){
-    // make sure we enable the manual override
-    // which will stop the PID control from taking
-    // immediately over
-    manualOverride = true;
     velocity = val;
     motor1.set(ControlMode.PercentOutput, velocity);  
-    LogInfo(true);
   }
 
-  public void Up(){
-    LogInfo(true);
-    if (atUpperLimit()){
-      stop();
-    }
-    else {
-      VerifyEncoderPhase(pastPosition);
-      dirMoved = Robot.Direction.UP;
-      setTalonSpeed(RobotMap.TalonWristUpSpeed);
-    }
-  }
-
-  public void Down(){
-    LogInfo(true);
-    if (atLowerLimit()){
-      stop();
-    }
-    else {
-      VerifyEncoderPhase(pastPosition);
-      dirMoved = Robot.Direction.DOWN;
-      setTalonSpeed(RobotMap.TalonWristDownSpeed);
-    }
-  }
-
-  public void Stop(){
-    dirMoved = Direction.NONE;
-    // or call motor1.stopMotor();
-    //setTalonSpeed(RobotMap.TalonWristStopSpeed);
-    stop();
-  }
-
+  /**
+   * this logs information about the wrist 
+   * @param dampen
+   * if dampen is true, only one out of logMsgInterval
+   * messages is displayed.  Displaying all messages can
+   * take up too much cpu and overrun the console buffer
+   */
   public void LogInfo(boolean dampen){
     count++;
 
     if(dampen && ((count % logMsgInterval) != 0)){
       return;
     }
-    double currPos = -1;
-    boolean atTarget = false;
-    if(encodersAreEnabled){
-      currPos = getCurrentPosition();
-      atTarget = onTarget();
+
+    String output = "Wrist Info: ";
+    if(useEncoder){
+      output = output + " target:" + targetPosition;
+      output = output + " curpos:" + getCurrentPosition();
     }
-  
-    String output = "Wrist Info: manual:" + manualOverride;
-    output = output + " target:" + targetPosition;
-    output = output + " current:" + currPos;
-    output = output + " ontarg:" + atTarget;
     output = output + " dir:" + dirMoved;
     output = output + " speed:" + velocity;
     output = output + " upLimit:" + atUpperLimit();
     output = output + " loimit:" + atLowerLimit();
-    Robot.Log(output);
+    Robot.Log(output);     
+  }
 
-    Robot.UpdateDashboard("Wrist.manual", manualOverride); 
-    Robot.UpdateDashboard("Wrist.targetPos", targetPosition); 
-    Robot.UpdateDashboard("Wrist.currPos", currPos);
-    Robot.UpdateDashboard("Wrist.speed", velocity);
-    Robot.UpdateDashboard("Wrist.upLimit", atUpperLimit());
-    Robot.UpdateDashboard("Wrist.loLimit", atLowerLimit());
-     
+  /**
+   * This functio does all of the work.  It is called before
+   * any of the commands are executed.  It works in PID mode whic
+   * is used to lock the wrist at a certain position.  Or it uses
+   * speed mode which determines the speed to move the motor by
+   * looking at values returned by a thumb stick 
+   */
+  public void periodic(){
+
+    // we are in pid mode when we lock the wrist.
+    if(mode == Mode.PID && useEncoder){
+      targetPosition = newTargetPosition;
+      motor1.set(ControlMode.Position, targetPosition);
+    }
+    else if(mode == Mode.SPEED){
+      double speed = Robot.m_oi.getOperWristControl() * -1;
+      double scaledSpeed;
+        
+      scaledSpeed = speed * RobotMap.WristScaledSpeedFactor;
+
+      if(scaledSpeed > 0){
+        if (atUpperLimit()){
+          stop();
+        }
+        
+        dirMoved = Robot.Direction.UP;
+      }
+      else if(scaledSpeed < 0){
+        if (atLowerLimit()){
+          stop();
+        }
+        
+        dirMoved = Robot.Direction.DOWN;
+      }
+      else {
+        dirMoved = Robot.Direction.NONE;
+      }
+
+      setTalonSpeed(scaledSpeed);
+    }
   }
 }

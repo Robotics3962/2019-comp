@@ -8,17 +8,13 @@
 package frc.robot.commands;
 
 import frc.robot.Robot;
-import frc.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.command.Command;
 
 public class ElevatorUpCmd extends Command {
-  public enum Mode{ PID, SPEED };
-  private Mode mode;
 
-  public ElevatorUpCmd(Mode controlMode) {
+  public ElevatorUpCmd() {
     requires (Robot.pidElevator);
-    mode = controlMode;
   }
 
   // Called just before this Command runs the first time
@@ -29,15 +25,7 @@ public class ElevatorUpCmd extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    switch(mode){
-      case PID:
-        double newPos = Robot.pidElevator.getTargetPosition() + RobotMap.ElevatorUpPidDelta;
-        Robot.pidElevator.setPIDPosition(newPos);
-      break;
-      case SPEED:
-        Robot.pidElevator.Up();
-      break;
-    }
+    Robot.pidElevator.Up();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -49,6 +37,7 @@ public class ElevatorUpCmd extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.pidElevator.Stop();
   }
 
   // Called when another command which requires one or more of the same
