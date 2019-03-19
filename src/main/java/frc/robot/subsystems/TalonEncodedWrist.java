@@ -223,7 +223,7 @@ public class TalonEncodedWrist extends Subsystem {
    */
   public void MoveTargetPositionUp(){
     dirMoved = Robot.Direction.UP;
-    if(!atUpperLimit()){
+    if(!atUpperLimit() && useEncoder){
       newTargetPosition += PID_TARGET_ADJUST_STEPS;
     }
   }
@@ -234,7 +234,7 @@ public class TalonEncodedWrist extends Subsystem {
    */
   public void MoveTargetPositionDown(){
     dirMoved = Robot.Direction.DOWN;
-    if(!atLowerLimit()){
+    if(!atLowerLimit() && useEncoder){
       newTargetPosition -= PID_TARGET_ADJUST_STEPS;
     }
   }
@@ -288,7 +288,7 @@ public class TalonEncodedWrist extends Subsystem {
   public void periodic(){
 
     // we are in pid mode when we lock the wrist.
-    if(mode == Mode.PID){
+    if(mode == Mode.PID && useEncoder){
       targetPosition = newTargetPosition;
       motor1.set(ControlMode.Position, targetPosition);
     }
