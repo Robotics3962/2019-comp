@@ -10,19 +10,12 @@ package frc.robot.subsystems;
 import frc.robot.RobotMap;
 import frc.robot.Robot.Direction;
 import frc.robot.Robot;
-import frc.robot.commands.ArmHoldCmd;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX; 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
-import java.lang.Math;
 
 public class TalonEncodedArm extends Subsystem {
 
@@ -38,7 +31,6 @@ public class TalonEncodedArm extends Subsystem {
   private double velocity;
   private int count = 0;
   private int logMsgInterval = 50;
-  private double prevPosition = 0;
   
   // holds variables used to determine out of phase encoders
   private Robot.Direction dirMoved = Robot.Direction.NONE; 
