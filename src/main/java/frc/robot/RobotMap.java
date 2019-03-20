@@ -58,49 +58,19 @@ public class RobotMap {
   public static final double TalonMinOutput = -0.25;
   public static final double TalonMaxOutput = 0.3;
 
-  /// generic
-  public static final double TalonUpSpeed = -.2;
-  public static final double TalonUpPidDelta = -20; // match sign of upspeed
-  public static final double TalonDownSpeed = .3;
-  public static final double TalonDownPidDelta = 20; // match sign of down speed
-  public static final double TalonStopSpeed = .001;
-  public static final double TalonAbsTolerance = 5;
-  public static final int    TalonCruiseSpeed = 15000;
-  public static final int    TalonAcceleration = 6000;
-  public static final double TalonPID_P = 4; //0.2;
-  public static final double TalonPID_I = 0.0;
-  public static final double TalonPID_D = 0.0;
-  public static final double TalonPID_F = 0.0;
-
-
   //arm values
   public static final double ArmScaledSpeedFactor = 0.3;
   public static final double TalonArmMinOutput = -0.3;
   public static final double TalonArmMaxOutput = 0.3;
   public static final double TalonArmUpSpeed = .3;
-  public static final double TalonArmUpPidDelta = 20; // match sign of upspeed
   public static final double TalonArmDownSpeed = -.2;
-  public static final double TalonArmDownPidDelta = -20; // match sign of down speed
   public static final double TalonSrmStopSpeed = .001;
   public static final double TalonArmAbsTolerance = 2.5;
-  public static final int    TalonArmCruiseSpeed = 15000;
-  public static final int    TalonArmAcceleration = 6000;
-  public static final double TalonArmInitPIDUp_P = 1.28; //0.2;
-  public static final double TalonArmInitPIDDown_P = 1.28; //0.2;
-  public static final double TalonArmMovePIDUp_P = 18; //0.2;
-  public static final double TalonArmMovePIDDown_P = 18 ; //0.2;
-  public static final double TalonArmPID_I = 0.0; //be careful when chnaging, speed increases by a ridiculous amount
-  public static final double TalonArmPID_D = 0.0;
-  public static final double TalonArmPID_F = 2.0;
-  public static final double TalonArmCalibrateUpDist = 300;
-  public static final double TalonArmCalibrateDownDist = -300;
-
+  
   //wrist values
   public static final double WristScaledSpeedFactor = 0.3;
   public static final double TalonWristUpSpeed = 0.3;
-  public static final double TalonWristUpPidDelta = 20; // match sign of upspeed
   public static final double TalonWristDownSpeed = -0.3;
-  public static final double TalonWristDownPidDelta = -20; // match sign of down speed
   public static final double TalonWristStopSpeed = .001;
   public static final double TalonWristAbsTolerance = 5;
   public static final int    TalonWristCruiseSpeed = 15000;
@@ -109,8 +79,6 @@ public class RobotMap {
   public static final double TalonWristPID_I = 0.0;
   public static final double TalonWristPID_D = 0.0;
   public static final double TalonWristPID_F = 0.0;
-  public static final double TalonWristCalibrateUpDist = -100;
-  public static final double TalonWristCalibrateDownDist = 1000;
 
   // elevator values
   public static final int SparkElevatorId = 5;

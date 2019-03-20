@@ -130,10 +130,10 @@ public class TalonEncodedWrist extends Subsystem {
 
       motor1.selectProfileSlot(ENCODER_SLOT_INDEX, PRIMARY_ENCODER_IDX);
 
-      motor1.config_kF(0, RobotMap.TalonArmPID_F, ENCODER_CONFIG_TIMEOUT);
-      motor1.config_kP(0, RobotMap.TalonArmInitPIDUp_P, ENCODER_CONFIG_TIMEOUT);
-      motor1.config_kI(0, RobotMap.TalonArmPID_I, ENCODER_CONFIG_TIMEOUT);
-      motor1.config_kD(0, RobotMap.TalonArmPID_D, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kF(0, RobotMap.TalonWristPID_F, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kP(0, RobotMap.TalonWristPID_P, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kI(0, RobotMap.TalonWristPID_I, ENCODER_CONFIG_TIMEOUT);
+      motor1.config_kD(0, RobotMap.TalonWristPID_D, ENCODER_CONFIG_TIMEOUT);
   
 		  /* Zero the sensor */
       motor1.setSelectedSensorPosition(PRIMARY_ENCODER_IDX, ENCODER_RESET_POSTION, ENCODER_CONFIG_TIMEOUT);
