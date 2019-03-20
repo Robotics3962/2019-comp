@@ -53,7 +53,7 @@ public class TalonEncodedWrist extends Subsystem {
   private double targetPosition = 0;
   private double newTargetPosition = 0;
   private Mode mode = Mode.SPEED;
-  private boolean useEncoder = true;
+  private boolean useEncoder = false;
 
   // set to true if limit switches set wired
   private boolean useLimitSw = false;
